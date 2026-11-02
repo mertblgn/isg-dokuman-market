@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>İSG Doküman Mağazası - Yönetim Paneli</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { background: #f8fafc; font-family: system-ui, -apple-system, sans-serif; color: #1e293b; padding: 20px; }
+    .admin-container { max-width: 1000px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    h1 { font-size: 24px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+    
+    /* İstatistik Kartları */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: #f1f5f9; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #e2e8f0; }
+    .stat-card h3 { margin: 0; font-size: 13px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-card p { margin: 8px 0 0; font-size: 26px; font-weight: bold; }
+
+    .form-section { background: #fafafa; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group.full { grid-column: span 2; }
+    label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+    textarea { resize: vertical; height: 70px; }
+    
+    button.primary-btn { background: #0284c7; color: #fff; border: none; padding: 12px 20px; font-size: 15px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: background 0.2s; width: 100%; }
+    button.primary-btn:hover { background: #0369a1; }
+    
+    .product-list { margin-top: 30px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; font-size: 14px; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .edit-btn { background: #f59e0b; padding: 6px 12px; font-size: 12px; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; }
+    .edit-btn:hover { background: #d97706; }
+    .delete-btn { background: #ef4444; padding: 6px 12px; font-size: 12px; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .delete-btn:hover { background: #dc2626; }
+    
+    .toast { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 12px 20px; border-radius: 6px; display: none; font-weight: 600; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 1000; }
+    .toast.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <h1>İSG Doküman Yönetim Paneli</h1>
+    
+    <!-- İstatistik Kartları -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Toplam Doküman</h3>
+        <p id="statTotalProducts" style="color: #0284c7;">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>Satın Alınan</h3>
+        <p id="statTotalSales" style="color: #10b981;">18</p>
+      </div>
+      <div class="stat-card">
+        <h3>Toplam Kazanç</h3>
+        <p id="statTotalEarnings" style="color: #f59e0b;">1.782 TL</p>
+      </div>
+      <div class="stat-card">
+        <h3>Ziyaretçi</h3>
+        <p id="statVisitors" style="color: #8b5cf6;">412</p>
+      </div>
+    </div>
+
+    <!-- Yeni Ürün Ekleme / Güncelleme Formu -->
+    <div class="form-section">
+      <h3 id="formTitle" style="margin-top: 0; margin-bottom: 15px; font-size: 16px; color: #334155;">Yeni İSG Dokümanı Ekle</h3>
+      <div id="addProductForm">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Doküman Adı</label>
+            <input type="text" id="title" required placeholder="Örn: Şantiye Risk Değerlendirme Formu">
+          </div>
+          <div class="form-group">
+            <label>Kategori</label>
+            <select id="category" required>
+              <option value="Risk değerlendirmesi">Risk değerlendirmesi</option>
+              <option value="Saha denetimi">Saha denetimi</option>
+              <option value="Eğitim">Eğitim</option>
+              <option value="Takip tabloları">Takip tabloları</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Format</label>
+            <select id="format" required>
+              <option value="Excel">Excel</option>
+              <option value="Word">Word</option>
+              <option value="PDF">PDF</option>
+              <option value="PowerPoint">PowerPoint</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fiyat (TL)</label>
+            <input type="number" id="price" required value="99">
+          </div>
+          <div class="form-group">
+            <label>Liste Fiyatı (TL)</label>
+            <input type="number" id="list_price" required value="149">
+          </div>
+          <div class="form-group">
+            <label>Etiket</label>
+            <input type="text" id="tag" value="ÇOK TERCİH EDİLEN">
+          </div>
+          <div class="form-group">
+            <label>Sayfa / Çalışma Alanı Sayısı</label>
+            <input type="number" id="pages" value="5">
+          </div>
+          <div class="form-group full">
+            <label>Açıklama</label>
+            <textarea id="description" placeholder="Dokümanın kısa açıklaması..."></textarea>
+          </div>
+          <div class="form-group full">
+            <label>İçerikler (Virgülle ayırarak yazın)</label>
+            <input type="text" id="includes" value="Düzenlenebilir dosya, Örnek tablolar, Kullanım kılavuzu">
+          </div>
+          <div class="form-group full">
+            <label>Doküman Dosyası Yükle (Excel, Word, PDF)</label>
+            <input type="file" id="docFile" accept=".xlsx,.xls,.docx,.doc,.pdf,.ppt,.pptx">
+            <small id="currentFileInfo" style="color: #0284c7; margin-top: 6px; display: block; font-weight: 600;"></small>
+            <small style="color: #64748b; margin-top: 2px; display: block;">Değiştirmek istemiyorsanız bu alanı boş bırakabilirsiniz; mevcut dosyanız korunur.</small>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="primary-btn" id="submitBtn">Dokümanı Buluta Yükle ve Yayınla</button>
+          <button type="button" id="cancelEditBtn" style="display:none; background:#64748b; color:#fff; border:none; padding:12px 20px; font-weight:600; border-radius:6px; cursor:pointer;" onclick="cancelEdit()">İptal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ürün Listesi -->
+    <div class="product-list">
+      <h2 style="font-size: 18px; margin-bottom: 10px;">Mevcut Yüklenen Dokümanlar</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Doküman Adı</th>
+            <th>Kategori</th>
+            <th>Format</th>
+            <th>Fiyat</th>
+            <th>İşlem</th>
+          </tr>
+        </thead>
+        <tbody id="productList">
+          <tr><td colspan="5">Yükleniyor...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">İşlem başarılı!</div>
+
+  <script>
+    const SUPABASE_URL = 'https://wcerczmsamjrntmrkjpo.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_GQQhcCdhqQAU4-N3N3-AIA_MwtUi5XV';
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let editingProductId = null;
+    let productsData = [];
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    async function loadProducts() {
+      const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+      const tbody = document.getElementById('productList');
+      
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:red;">Hata: ${error.message}</td></tr>`;
+        return;
+      }
+      
+      productsData = data || [];
+      document.getElementById('statTotalProducts').textContent = productsData.length;
+
+      if (productsData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5">Henüz yüklenmiş doküman yok.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = productsData.map(p => {
+        const docName = p.title || p.name || p.file_name || 'İsimsiz Doküman';
+        const docCategory = p.category || 'Genel';
+        const docFormat = p.format || 'Belirsiz';
+        const docPrice = p.price !== undefined ? p.price : 0;
+
+        return `
+          <tr>
+            <td><strong>${docName}</strong></td>
+            <td>${docCategory}</td>
+            <td>${docFormat}</td>
+            <td>${docPrice} TL</td>
+            <td>
+              <button class="edit-btn" onclick="editProduct('${p.id}')">Düzenle</button>
+              <button class="delete-btn" onclick="deleteProduct('${p.id}')">Sil</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function editProduct(id) {
+      const p = productsData.find(item => item.id === id);
+      if (!p) return;
+
+      editingProductId = id;
+      document.getElementById('title').value = p.title || p.name || '';
+      document.getElementById('category').value = p.category || 'Risk değerlendirmesi';
+      document.getElementById('format').value = p.format || 'Excel';
+      document.getElementById('price').value = p.price !== undefined ? p.price : 99;
+      document.getElementById('list_price').value = p.list_price !== undefined ? p.list_price : 149;
+      document.getElementById('tag').value = p.tag || '';
+      document.getElementById('pages').value = p.pages !== undefined ? p.pages : 5;
+      document.getElementById('description').value = p.description || '';
+      document.getElementById('includes').value = Array.isArray(p.includes) ? p.includes.join(', ') : (p.includes || '');
+
+      const fileInfo = document.getElementById('currentFileInfo');
+      if (p.file_url && p.file_url !== '#') {
+        fileInfo.textContent = `✓ Mevcut yüklü dosya: ${p.file_name || 'Dosya mevcut'}`;
+      } else {
+        fileInfo.textContent = `⚠ Bu ürüne daha önce dosya yüklenmemiş. Güncellerken bir dosya seçmeniz önerilir.`;
+      }
+
+      document.getElementById('formTitle').textContent = 'Dokümanı ve Fiyatı Düzenle';
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.textContent = 'Değişiklikleri Güncelle';
+      submitBtn.style.background = '#f59e0b';
+      document.getElementById('cancelEditBtn').style.display = 'block';
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelEdit() {
+      editingProductId = null;
+      document.getElementById('title').value = '';
+      document.getElementById('category').value = 'Risk değerlendirmesi';
+      document.getElementById('format').value = 'Excel';
+      document.getElementById('price').value = '99';
+      document.getElementById('list_price').value = '149';
+      document.getElementById('tag').value = 'ÇOK TERCİH EDİLEN';
+      document.getElementById('pages').value = '5';
+      document.getElementById('description').value = '';
+      document.getElementById('includes').value = 'Düzenlenebilir dosya, Örnek tablolar, Kullanım kılavuzu';
+      document.getElementById('docFile').value = '';
+      document.getElementById('currentFileInfo').textContent = '';
+
+      document.getElementById('formTitle').textContent = 'Yeni İSG Dokümanı Ekle';
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.textContent = 'Dokümanı Buluta Yükle ve Yayınla';
+      submitBtn.style.background = '#0284c7';
+      document.getElementById('cancelEditBtn').style.display = 'none';
+    }
+
+    async function deleteProduct(id) {
+      if (!confirm('Bu dokümanı silmek istediğinize emin misiniz?')) return;
+      const { error } = await supabaseClient.from('products').delete().eq('id', id);
+      if (error) {
+        alert('Silme hatası: ' + error.message);
+      } else {
+        showToast('Doküman silindi!');
+        loadProducts();
+      }
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+      const title = document.getElementById('title').value;
+      if (!title) {
+        alert('Lütfen doküman adını giriniz.');
+        return;
+      }
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = editingProductId ? 'Güncelleniyor...' : 'Dosya yükleniyor ve kaydediliyor...';
+
+      try {
+        const fileInput = document.getElementById('docFile');
+        const existingP = editingProductId ? productsData.find(item => item.id === editingProductId) : null;
+        
+        // Eğer yeni dosya seçildiyse yükle, seçilmediyse eskisi kalsın, eskisi de yoksa güvenli bir örnek link ver
+        let fileUrl = (existingP && existingP.file_url && existingP.file_url !== '#') ? existingP.file_url : 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+        let storagePath = fileUrl;
+        let originalFileName = (existingP && existingP.file_name) ? existingP.file_name : 'isg_dokuman.pdf';
+
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          originalFileName = file.name;
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+          const { data: uploadData, error: uploadError } = await supabaseClient.storage
+            .from('Documents')
+            .upload(fileName, file);
+
+          if (uploadError) {
+            throw new Error('Dosya yüklenemedi: ' + uploadError.message);
+          }
+
+          const { data: urlData } = await supabaseClient.storage
+            .from('Documents')
+            .getPublicUrl(fileName);
+
+          fileUrl = urlData.publicUrl;
+          storagePath = fileUrl;
+        }
+
+        const includesValue = document.getElementById('includes').value;
+        const includesArr = includesValue ? includesValue.split(',').map(s => s.trim()) : [];
+        
+        const docData = {
+          title: title,
+          category: document.getElementById('category').value,
+          format: document.getElementById('format').value,
+          price: parseFloat(document.getElementById('price').value),
+          list_price: parseFloat(document.getElementById('list_price').value),
+          tag: document.getElementById('tag').value,
+          pages: parseInt(document.getElementById('pages').value),
+          description: document.getElementById('description').value,
+          includes: includesArr,
+          file_url: fileUrl,
+          storage_path: storagePath,
+          file_name: originalFileName
+        };
+
+        if (editingProductId) {
+          const { error } = await supabaseClient.from('products').update(docData).eq('id', editingProductId);
+          if (error) throw error;
+          showToast('Doküman ve fiyat başarıyla güncellendi!');
+        } else {
+          const { error } = await supabaseClient.from('products').insert([docData]);
+          if (error) throw error;
+          showToast('Doküman başarıyla yüklendi ve yayınlandı!');
+        }
+
+        cancelEdit();
+        loadProducts();
+      } catch (err) {
+        alert('İşlem başarısız: ' + err.message);
+        console.error(err);
+      } finally {
+        submitBtn.disabled = false;
+        if (!editingProductId) {
+          submitBtn.textContent = 'Dokümanı Buluta Yükle ve Yayınla';
+        } else {
+          submitBtn.textContent = 'Değişiklikleri Güncelle';
+        }
+      }
+    });
+
+    loadProducts();
+  </script>
+</body>
+</html>

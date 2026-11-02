@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="İSG raporları, formları ve düzenlenebilir dijital şablonlar.">
+  <title>İSG Doküman Marketi | Profesyonel Şablonlar</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="topbar">İSG profesyonelleri için düzenlenebilir dijital dokümanlar</div>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="İSG Doküman Marketi ana sayfa">
+      <svg class="brand-symbol" viewBox="0 0 64 64" role="img" aria-label="Kırmızı baret ve A4 doküman logosu" xmlns="http://www.w3.org/2000/svg"><path d="M35 7h19l7 7v37H35z" fill="#fff" stroke="#ffd400" stroke-width="2.5"/><path d="M54 7v8h7" fill="none" stroke="#ffd400" stroke-width="2.5"/><path d="M41 23h14M41 29h14M41 35h11M41 41h14" stroke="#151515" stroke-width="2.5" stroke-linecap="round"/><path d="M5 30a21 21 0 0 1 42 0v4H5z" fill="#e00018" stroke="#a90012" stroke-width="2"/><path d="M26 10v23M9 25h34" stroke="#ff5967" stroke-width="2.5" stroke-linecap="round"/><path d="M2 34h48l-5 8H9z" fill="#c90016" stroke="#a90012" stroke-width="2"/><path d="M18 42h24l-3 5H15z" fill="#ffd400"/></svg>
+      <span><strong>Doküman Marketi</strong><small>SAHA • RAPOR • ŞABLON</small></span>
+    </a>
+    <nav class="main-nav" aria-label="Ana menü">
+      <a href="#kategoriler">Kategoriler</a><a href="#urunler">Tüm şablonlar</a><a href="#nasil-calisir">Nasıl çalışır?</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-button" id="searchFocus" aria-label="Aramaya git">⌕</button>
+      <button class="cart-button" id="cartButton">Sepet <span id="cartCount">0</span></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-dot"></span> İŞİNİ KOLAYLAŞTIRAN ŞABLONLAR</div>
+        <h1>İSG dokümanların.<br><em>Daha düzenli,</em> daha hızlı.</h1>
+        <p>İş sağlığı ve güvenliği süreçlerin için düzenlenebilir rapor, form ve takip şablonlarını incele. Önizle, ihtiyacını seç, dijital olarak teslim al.</p>
+        <div class="hero-actions"><a class="btn btn-primary" href="#urunler">Şablonları keşfet <span>↗</span></a><a class="text-link" href="#nasil-calisir">Nasıl çalışır? <span>↓</span></a></div>
+        <div class="hero-proof"><span class="proof-icon">✓</span> Word, Excel ve PDF formatları <span class="proof-separator">•</span> Anında dijital teslimat*</div>
+      </div>
+      <div class="hero-art" aria-label="Doküman örnekleri">
+        <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+        <div class="floating-card card-back"><div class="mini-top"><span>İSG / FORM</span><span class="mini-stamp">ÖRNEK</span></div><div class="mini-lines"><i></i><i></i><i></i><i></i></div><div class="mini-grid"><b></b><b></b><b></b><b></b><b></b><b></b></div></div>
+        <div class="floating-card card-front"><div class="doc-head"><span class="doc-icon">▤</span><span><b>SAHA DENETİM RAPORU</b><small>Doküman önizlemesi</small></span></div><div class="doc-rule"></div><div class="doc-row"><span>Kontrol alanı</span><span>Durum</span></div><div class="doc-row"><span>KKD kullanımı</span><b class="status-ok">Uygun</b></div><div class="doc-row"><span>Yaya yolları</span><b class="status-warn">İncelenecek</b></div><div class="doc-row"><span>Elektrik panosu</span><b class="status-ok">Uygun</b></div><div class="doc-watermark">ÖNİZLEME</div><div class="doc-footer"><span>İSG DOKÜMAN MARKETİ</span><span>01 / 04</span></div></div>
+        <div class="floating-tag tag-one">✦ Düzenlenebilir</div><div class="floating-tag tag-two">DOCX · XLSX · PDF</div>
+      </div>
+    </section>
+
+    <section class="trust-strip">
+      <div><span class="trust-icon">▤</span><span><b>İhtiyacına uygun format</b><small>Word, Excel ve PDF</small></span></div>
+      <div><span class="trust-icon">◉</span><span><b>Satın almadan önce incele</b><small>Filigranlı örnek sayfalar</small></span></div>
+      <div><span class="trust-icon">↧</span><span><b>Dijital teslimat</b><small>Satın alma sonrası indirme*</small></span></div>
+    </section>
+
+    <section class="section category-section" id="kategoriler">
+      <div class="section-heading"><div><div class="eyebrow">KATALOĞU KEŞFET</div><h2>Hangi dokümana ihtiyacın var?</h2></div><p>İş akışına uygun şablonu<br>kategorisinden bul.</p></div>
+      <div class="category-grid" id="categoryGrid">
+        <button class="category-tile active" data-category="Tümü"><span class="category-symbol">▦</span><b>Tüm şablonlar</b><small>Her şeyi görüntüle</small><span class="tile-arrow">↗</span></button>
+        <button class="category-tile" data-category="Risk değerlendirmesi"><span class="category-symbol">◈</span><b>Risk değerlendirmesi</b><small>Analiz ve takip</small><span class="tile-arrow">↗</span></button>
+        <button class="category-tile" data-category="Saha denetimi"><span class="category-symbol">☷</span><b>Saha denetimi</b><small>Kontrol ve tespit</small><span class="tile-arrow">↗</span></button>
+        <button class="category-tile" data-category="Eğitim"><span class="category-symbol">▤</span><b>Eğitim dokümanları</b><small>Eğitim ve katılım</small><span class="tile-arrow">↗</span></button>
+        <button class="category-tile" data-category="Takip tabloları"><span class="category-symbol">▥</span><b>Takip tabloları</b><small>Excel ve kayıt</small><span class="tile-arrow">↗</span></button>
+      </div>
+    </section>
+
+    <section class="section product-section" id="urunler">
+      <div class="section-heading product-heading"><div><div class="eyebrow">DİJİTAL KÜTÜPHANE</div><h2>Öne çıkan şablonlar</h2><p class="section-subtitle">İçeriği incele, formatı seç, ihtiyacına göre düzenle.</p></div><div class="catalog-controls"><label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="Şablon ara..." aria-label="Şablon ara"></label><select id="sortSelect" aria-label="Sıralama"><option value="featured">Öne çıkanlar</option><option value="price-low">Fiyat: düşükten yükseğe</option><option value="price-high">Fiyat: yüksekten düşüğe</option></select></div></div>
+      <div class="filter-row"><span id="resultCount">6 şablon</span><div class="format-filters"><button class="format-filter active" data-format="Tümü">Tümü</button><button class="format-filter" data-format="Word">Word</button><button class="format-filter" data-format="Excel">Excel</button><button class="format-filter" data-format="PDF">PDF</button></div></div>
+      <div class="product-grid" id="productGrid"></div>
+      <div class="empty-state" id="emptyState" hidden>Aramana uygun şablon bulunamadı. Filtreleri değiştirebilirsin.</div>
+    </section>
+
+    <section class="how-section" id="nasil-calisir">
+      <div class="how-inner"><div><div class="eyebrow">ÜÇ ADIMDA</div><h2>Doğru şablon,<br><em>kolay iş akışı.</em></h2><p>Ürün detayını ve örnek sayfaları inceleyerek ihtiyacına uygun dokümanı seç.</p></div><div class="steps"><div class="step"><span>01</span><div><b>Şablonu bul</b><p>Kategorileri ve aramayı kullanarak dokümanını keşfet.</p></div></div><div class="step"><span>02</span><div><b>Önizlemeyi incele</b><p>Filigranlı örnek sayfalardan yapıyı ve dosya formatını gör.</p></div></div><div class="step"><span>03</span><div><b>Satın al ve indir</b><p>Ödeme entegrasyonu tamamlandığında dosyanı güvenli şekilde teslim al.</p></div></div></div></div>
+    </section>
+
+    <section class="disclaimer"><span>ⓘ</span><p><b>Önemli not:</b> Şablonlar başlangıç dokümanıdır. İşyerine, tehlike sınıfına ve yürürlükteki mevzuata göre kontrol edilip uyarlanmalıdır. Bu prototipte ürün yönetimi bu tarayıcıda çalışır; gerçek ödeme ve güvenli dosya teslimatı henüz etkin değildir.</p></section>
+  </main>
+
+  <footer class="site-footer"><a class="brand footer-brand" href="#"><svg class="brand-symbol" viewBox="0 0 64 64" role="img" aria-label="Kırmızı baret ve A4 doküman logosu" xmlns="http://www.w3.org/2000/svg"><path d="M35 7h19l7 7v37H35z" fill="#fff" stroke="#ffd400" stroke-width="2.5"/><path d="M54 7v8h7" fill="none" stroke="#ffd400" stroke-width="2.5"/><path d="M41 23h14M41 29h14M41 35h11M41 41h14" stroke="#151515" stroke-width="2.5" stroke-linecap="round"/><path d="M5 30a21 21 0 0 1 42 0v4H5z" fill="#e00018" stroke="#a90012" stroke-width="2"/><path d="M26 10v23M9 25h34" stroke="#ff5967" stroke-width="2.5" stroke-linecap="round"/><path d="M2 34h48l-5 8H9z" fill="#c90016" stroke="#a90012" stroke-width="2"/><path d="M18 42h24l-3 5H15z" fill="#ffd400"/></svg><span><strong>Doküman Marketi</strong><small>SAHA • RAPOR • ŞABLON</small></span></a><div>© <span id="year"></span> İSG Doküman Marketi</div><div class="footer-links"><a href="#nasil-calisir">Nasıl çalışır?</a><a href="admin.html">Yönetim paneli</a></div></footer>
+
+  <!-- Önizleme Modalı -->
+  <div class="modal-backdrop" id="previewModal" hidden>
+    <section class="preview-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="closeModal" aria-label="Kapat">×</button>
+      <div class="modal-content">
+        <div class="preview-column"><div class="preview-toolbar"><span>ÖNİZLEME</span><span id="previewPageCount">Sayfa 1 / 3</span></div><div class="paper-preview" id="paperPreview"><div class="paper-watermark">ÖNİZLEME</div><div class="paper-brand">İSG DOKÜMAN MARKETİ</div><h3 id="paperTitle">Şablon başlığı</h3><p class="paper-subtitle">ÖRNEK DOKÜMAN • KONTROL EDİLMELİDİR</p><div class="paper-line wide"></div><div class="paper-line"></div><div class="paper-line medium"></div><div class="paper-table"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div><div class="paper-line wide"></div><div class="paper-line medium"></div><div class="paper-signatures"><span>Hazırlayan</span><span>Kontrol eden</span></div><div class="paper-page">ÖRNEK SAYFA · <span id="paperPage">1</span></div></div><div class="preview-pager"><button id="prevPage" disabled>← Önceki</button><button id="nextPage">Sonraki →</button></div></div>
+        <div class="product-detail"><div class="eyebrow" id="modalCategory">KATEGORİ</div><h2 id="modalTitle">Ürün adı</h2><p id="modalDescription"></p><div class="detail-price" id="modalPrice"></div><div class="detail-meta"><span id="modalFormat"></span><span id="modalPages"></span></div><div class="detail-divider"></div><b>Ürün içeriği</b><ul id="modalIncludes"></ul><div class="watermark-note">◉ Bu alan, belgenin yapısını göstermek için hazırlanmış filigranlı örnek önizlemedir.</div><button class="btn btn-primary full-width" id="buyButton">Sepete ekle <span>＋</span></button><small class="demo-note">Demo: gerçek ödeme alınmaz ve dosya teslim edilmez.</small></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Sepet Çekmecesi / Modalı -->
+  <div class="modal-backdrop" id="cartModal" hidden>
+    <section class="preview-modal" role="dialog" aria-modal="true" style="max-width: 600px; padding: 25px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
+        <h2 style="margin: 0; font-size: 20px;">Alışveriş Sepetiniz</h2>
+        <button class="modal-close" id="closeCartModal" aria-label="Kapat" style="position: static;">×</button>
+      </div>
+      <div id="cartItemList" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;">
+        <!-- Sepet ürünleri buraya gelecek -->
+      </div>
+      <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <span style="font-weight: 600; font-size: 16px;">Toplam Tutar:</span>
+        <span id="cartTotalPrice" style="font-weight: bold; font-size: 20px; color: #0284c7;">0 TL</span>
+      </div>
+      <button class="btn btn-primary full-width" id="checkoutButton" style="padding: 12px; font-size: 16px;">Sepeti Onayla ve Dosyaları İndir <span>↓</span></button>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>
