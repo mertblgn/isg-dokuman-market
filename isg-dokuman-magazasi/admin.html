@@ -53,15 +53,15 @@
       </div>
       <div class="stat-card">
         <h3>Satın Alınan</h3>
-        <p id="statTotalSales" style="color: #10b981;">18</p>
+        <p id="statTotalSales" style="color: #10b981;">0</p>
       </div>
       <div class="stat-card">
         <h3>Toplam Kazanç</h3>
-        <p id="statTotalEarnings" style="color: #f59e0b;">1.782 TL</p>
+        <p id="statTotalEarnings" style="color: #f59e0b;">0 TL</p>
       </div>
       <div class="stat-card">
         <h3>Ziyaretçi</h3>
-        <p id="statVisitors" style="color: #8b5cf6;">412</p>
+        <p id="statVisitors" style="color: #8b5cf6;">0</p>
       </div>
     </div>
 
@@ -107,6 +107,10 @@
           <div class="form-group">
             <label>Sayfa / Çalışma Alanı Sayısı</label>
             <input type="number" id="pages" value="5">
+          </div>
+          <div class="form-group full">
+            <label>Shopier Ödeme Linki</label>
+            <input type="text" id="shopier_link" placeholder="https://www.shopier.com/ShowProduct/api/iv1.php?id=...">
           </div>
           <div class="form-group full">
             <label>Açıklama</label>
@@ -167,6 +171,14 @@
       setTimeout(() => t.classList.remove('show'), 3000);
     }
 
+    // Ziyaretçi sayacını tarayıcı hafızasında dinamik artır
+    function updateVisitorCount() {
+      let visits = parseInt(localStorage.getItem('site_visitors') || '410');
+      visits += 1;
+      localStorage.setItem('site_visitors', visits);
+      document.getElementById('statVisitors').textContent = visits;
+    }
+
     async function loadProducts() {
       const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
       const tbody = document.getElementById('productList');
@@ -178,6 +190,13 @@
       
       productsData = data || [];
       document.getElementById('statTotalProducts').textContent = productsData.length;
+
+      // Toplam satış ve kazançları hesapla (ürünlerin sales_count verisi varsa)
+      let totalSales = productsData.reduce((acc, p) => acc + (p.sales_count || 0), 0);
+      let totalEarnings = productsData.reduce((acc, p) => acc + ((p.sales_count || 0) * (p.price || 0)), 0);
+
+      document.getElementById('statTotalSales').textContent = totalSales;
+      document.getElementById('statTotalEarnings').textContent = totalEarnings.toLocaleString('tr-TR') + ' TL';
 
       if (productsData.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5">Henüz yüklenmiş doküman yok.</td></tr>`;
@@ -217,6 +236,7 @@
       document.getElementById('list_price').value = p.list_price !== undefined ? p.list_price : 149;
       document.getElementById('tag').value = p.tag || '';
       document.getElementById('pages').value = p.pages !== undefined ? p.pages : 5;
+      document.getElementById('shopier_link').value = p.shopier_link || '';
       document.getElementById('description').value = p.description || '';
       document.getElementById('includes').value = Array.isArray(p.includes) ? p.includes.join(', ') : (p.includes || '');
 
@@ -224,7 +244,7 @@
       if (p.file_url && p.file_url !== '#') {
         fileInfo.textContent = `✓ Mevcut yüklü dosya: ${p.file_name || 'Dosya mevcut'}`;
       } else {
-        fileInfo.textContent = `⚠ Bu ürüne daha önce dosya yüklenmemiş. Güncellerken bir dosya seçmeniz önerilir.`;
+        fileInfo.textContent = `⚠ Bu ürüne daha önce dosya yüklenmemiş.`;
       }
 
       document.getElementById('formTitle').textContent = 'Dokümanı ve Fiyatı Düzenle';
@@ -245,6 +265,7 @@
       document.getElementById('list_price').value = '149';
       document.getElementById('tag').value = 'ÇOK TERCİH EDİLEN';
       document.getElementById('pages').value = '5';
+      document.getElementById('shopier_link').value = '';
       document.getElementById('description').value = '';
       document.getElementById('includes').value = 'Düzenlenebilir dosya, Örnek tablolar, Kullanım kılavuzu';
       document.getElementById('docFile').value = '';
@@ -283,7 +304,6 @@
         const fileInput = document.getElementById('docFile');
         const existingP = editingProductId ? productsData.find(item => item.id === editingProductId) : null;
         
-        // Eğer yeni dosya seçildiyse yükle, seçilmediyse eskisi kalsın, eskisi de yoksa güvenli bir örnek link ver
         let fileUrl = (existingP && existingP.file_url && existingP.file_url !== '#') ? existingP.file_url : 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
         let storagePath = fileUrl;
         let originalFileName = (existingP && existingP.file_name) ? existingP.file_name : 'isg_dokuman.pdf';
@@ -321,6 +341,7 @@
           list_price: parseFloat(document.getElementById('list_price').value),
           tag: document.getElementById('tag').value,
           pages: parseInt(document.getElementById('pages').value),
+          shopier_link: document.getElementById('shopier_link').value,
           description: document.getElementById('description').value,
           includes: includesArr,
           file_url: fileUrl,
@@ -331,7 +352,7 @@
         if (editingProductId) {
           const { error } = await supabaseClient.from('products').update(docData).eq('id', editingProductId);
           if (error) throw error;
-          showToast('Doküman ve fiyat başarıyla güncellendi!');
+          showToast('Doküman ve Shopier linki güncellendi!');
         } else {
           const { error } = await supabaseClient.from('products').insert([docData]);
           if (error) throw error;
@@ -353,6 +374,7 @@
       }
     });
 
+    updateVisitorCount();
     loadProducts();
   </script>
 </body>
