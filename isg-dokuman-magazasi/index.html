@@ -85,21 +85,27 @@
     </section>
   </div>
 
-  <!-- Sepet Çekmecesi / Modalı -->
+  <!-- Sepet ve Doğrudan Ödeme / İndirme Modalı -->
   <div class="modal-backdrop" id="cartModal" hidden>
     <section class="preview-modal" role="dialog" aria-modal="true" style="max-width: 600px; padding: 25px;">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
         <h2 style="margin: 0; font-size: 20px;">Alışveriş Sepetiniz</h2>
         <button class="modal-close" id="closeCartModal" aria-label="Kapat" style="position: static;">×</button>
       </div>
-      <div id="cartItemList" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;">
+      
+      <!-- Sepet Listesi -->
+      <div id="cartItemList" style="max-height: 220px; overflow-y: auto; margin-bottom: 20px;">
         <!-- Sepet ürünleri buraya gelecek -->
       </div>
+
       <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <span style="font-weight: 600; font-size: 16px;">Toplam Tutar:</span>
         <span id="cartTotalPrice" style="font-weight: bold; font-size: 20px; color: #0284c7;">0 TL</span>
       </div>
-      <button class="btn btn-primary full-width" id="checkoutButton" style="padding: 12px; font-size: 16px;">Sepeti Onayla ve Dosyaları İndir <span>↓</span></button>
+
+      <!-- Doğrudan Ödeme ve Otomatik İndirme Butonu -->
+      <button class="btn btn-primary full-width" id="checkoutButton" style="padding: 14px; font-size: 16px;">Ödemeyi Tamamla ve PDF İndir <span>↓</span></button>
+      <small style="display: block; text-align: center; margin-top: 10px; color: #64748b;">Ödeme onaylandığı an seçtiğiniz şablonlar otomatik olarak indirilecektir.</small>
     </section>
   </div>
 
