@@ -1,3 +1,28 @@
+// Ziyaretçi Sayacını Artır (Sadece ana sayfaya girildiğinde çalışır)
+  async function trackVisitor() {
+    if (!supabaseClient) return;
+    
+    // Tarayıcı oturumu boyunca aynı kullanıcı tekrar tekrar sayılmasın istersen (isteğe bağlı)
+    if (sessionStorage.getItem('visited')) return;
+    
+    try {
+      // Supabase'de ziyaretçi sayısını tuttuğun tablonun yapısına göre güncellenir
+      // Örnek olarak 'stats' veya 'visitors' tablosu kullanıyorsan:
+      let { data, error } = await supabaseClient.from('stats').select('*').limit(1).single();
+      
+      if (data) {
+        const newCount = (data.visitor_count || 419) + 1;
+        await supabaseClient.from('stats').update({ visitor_count: newCount }).eq('id', data.id);
+        sessionStorage.setItem('visited', 'true');
+      }
+    } catch (err) {
+      console.error('Ziyaretçi sayacı güncellenemedi:', err);
+    }
+  }
+
+  // Fonksiyonu ana sayfa açıldığında çağır
+  trackVisitor();
+
 document.addEventListener('DOMContentLoaded', () => {
   const SUPABASE_URL = 'https://wcerczmsamjrntmrkjpo.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_GQQhcCdhqQAU4-N3N3-AIA_MwtUi5XV';

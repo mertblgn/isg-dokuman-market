@@ -171,12 +171,19 @@
       setTimeout(() => t.classList.remove('show'), 3000);
     }
 
-    // Ziyaretçi sayacını tarayıcı hafızasında dinamik artır
-    function updateVisitorCount() {
-      let visits = parseInt(localStorage.getItem('site_visitors') || '410');
-      visits += 1;
-      localStorage.setItem('site_visitors', visits);
-      document.getElementById('statVisitors').textContent = visits;
+    // Ziyaretçi sayacını sadece OKUYAN fonksiyon (Artık admin paneline girince artmaz, ana sayfada artar)
+    async function loadVisitorCount() {
+      try {
+        let { data, error } = await supabaseClient.from('stats').select('*').limit(1).single();
+        if (data && data.visitor_count !== undefined) {
+          document.getElementById('statVisitors').textContent = data.visitor_count;
+        } else {
+          // Tablo henüz yoksa veya veri bulunamadıysa varsayılan lokal/fallback gösterge
+          document.getElementById('statVisitors').textContent = localStorage.getItem('site_visitors') || '420';
+        }
+      } catch (err) {
+        document.getElementById('statVisitors').textContent = localStorage.getItem('site_visitors') || '420';
+      }
     }
 
     async function loadProducts() {
@@ -191,7 +198,7 @@
       productsData = data || [];
       document.getElementById('statTotalProducts').textContent = productsData.length;
 
-      // Toplam satış ve kazançları hesapla (ürünlerin sales_count verisi varsa)
+      // Toplam satış ve kazançları hesapla
       let totalSales = productsData.reduce((acc, p) => acc + (p.sales_count || 0), 0);
       let totalEarnings = productsData.reduce((acc, p) => acc + ((p.sales_count || 0) * (p.price || 0)), 0);
 
@@ -374,7 +381,7 @@
       }
     });
 
-    updateVisitorCount();
+    loadVisitorCount();
     loadProducts();
   </script>
 </body>
