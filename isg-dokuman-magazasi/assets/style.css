@@ -1016,3 +1016,87 @@ h1 em, h2 em {
   color: #16a34a;
   font-weight: bold;
 }
+
+/* Hero Önizleme Kartı Düzeltmesi */
+.floating-card.card-front {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  font-size: 11px;
+}
+
+.doc-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+}
+
+.doc-head b {
+  display: block;
+  font-size: 12px;
+  color: #0f172a;
+}
+
+.doc-head small {
+  display: block;
+  font-size: 9px;
+  color: #64748b;
+}
+
+.doc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 6px;
+  background: #f8fafc;
+  border-radius: 4px;
+  font-size: 10px;
+  border: 1px solid #f1f5f9;
+}
+
+.status-ok {
+  color: #16a34a;
+  background: #dcfce7;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+}
+
+.status-warn {
+  color: #d97706;
+  background: #fef3c7;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+}
+
+.doc-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  font-size: 24px;
+  font-weight: 800;
+  color: rgba(220, 38, 38, 0.06);
+  pointer-events: none;
+  letter-spacing: 2px;
+}
+
+.doc-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 9px;
+  color: #94a3b8;
+}
