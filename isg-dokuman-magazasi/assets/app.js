@@ -323,15 +323,60 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCartItems();
   };
 
-  const checkoutButton = document.getElementById('checkoutButton');
+const checkoutButton = document.getElementById('checkoutButton');
   if (checkoutButton) {
-    checkoutButton.addEventListener('click', () => {
+    checkoutButton.addEventListener('click', async () => {
       if (cart.length === 0) {
         alert('Sepetiniz boş.');
         return;
       }
 
-      showToast('Ödeme onaylandı, dosya indiriliyor...');
+      showToast('PayTR güvenli ödeme ekranı yükleniyor...');
+
+      try {
+        const res = await fetch('/api/paytr-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cart })
+        });
+        const data = await res.json();
+
+        if (data.status === 'success') {
+          if (cartModal) cartModal.hidden = true;
+          
+          let paytrModal = document.getElementById('paytrModal');
+          if (!paytrModal) {
+            paytrModal = document.createElement('div');
+            paytrModal.id = 'paytrModal';
+            paytrModal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;';
+            paytrModal.innerHTML = `
+              <div style="background: white; width: 100%; max-width: 900px; height: 80vh; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; position: relative;">
+                <div style="background: #111; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
+                  <b>Güvenli Kredi Kartı Ödeme Ekranı (PayTR Test)</b>
+                  <button id="closePaytrModal" style="background: transparent; border: none; color: white; font-size: 18px; cursor: pointer;">✕</button>
+                </div>
+                <iframe id="paytriframe" src="https://www.paytr.com/odeme/guvenli/${data.token}" style="width: 100%; height: 100%; border: none;" frameborder="0"></iframe>
+              </div>
+            `;
+            document.body.appendChild(paytrModal);
+            
+            document.getElementById('closePaytrModal').addEventListener('click', () => {
+              paytrModal.remove();
+            });
+          } else {
+            document.getElementById('paytriframe').src = `https://www.paytr.com/odeme/guvenli/${data.token}`;
+            paytrModal.style.display = 'flex';
+          }
+
+        } else {
+          alert('Ödeme başlatılamadı: ' + (data.reason || 'Sunucu hatası'));
+        }
+      } catch (err) {
+        console.error('Ödeme hatası:', err);
+        alert('Bağlantı hatası oluştu.');
+      }
+    });
+  }
 
       cart.forEach((item, index) => {
         setTimeout(() => {
