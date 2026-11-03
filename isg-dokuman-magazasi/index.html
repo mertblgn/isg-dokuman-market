@@ -111,7 +111,7 @@
     </section>
   </div>
 
-  <!-- Sepet ve Doğrudan Ödeme / İndirme Modalı -->
+  <!-- Sepet ve Ödeme Modalı (E-posta Alanı Eklendi) -->
   <div class="modal-backdrop" id="cartModal" hidden>
     <section class="preview-modal" role="dialog" aria-modal="true" style="max-width: 600px; padding: 25px;">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
@@ -124,14 +124,20 @@
         <!-- Sepet ürünleri buraya gelecek -->
       </div>
 
+      <!-- Müşteri E-posta Giriş Alanı -->
+      <div style="margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <label for="customerEmail" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #1e293b;">E-posta Adresiniz (Dosyaların gönderileceği adres):</label>
+        <input type="email" id="customerEmail" placeholder="ornek@mail.com" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; box-sizing: border-box;" required>
+      </div>
+
       <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <span style="font-weight: 600; font-size: 16px;">Toplam Tutar:</span>
         <span id="cartTotalPrice" style="font-weight: bold; font-size: 20px; color: #0284c7;">0 TL</span>
       </div>
 
-      <!-- Doğrudan Ödeme ve Otomatik İndirme Butonu -->
-      <button class="btn btn-primary full-width" id="checkoutButton" style="padding: 14px; font-size: 16px;">Ödemeyi Tamamla ve PDF İndir <span>↓</span></button>
-      <small style="display: block; text-align: center; margin-top: 10px; color: #64748b;">Ödeme onaylandığı an seçtiğiniz şablonlar otomatik olarak indirilecektir.</small>
+      <!-- Ödeme Butonu -->
+      <button class="btn btn-primary full-width" id="checkoutButton" style="padding: 14px; font-size: 16px;">Ödemeyi Tamamla ve Satın Al <span>↓</span></button>
+      <small style="display: block; text-align: center; margin-top: 10px; color: #64748b;">Ödeme onaylandığında şablonlarınız belirttiğiniz e-posta adresine iletilecektir.</small>
     </section>
   </div>
 

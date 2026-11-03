@@ -330,13 +330,26 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // E-posta alanını kontrol et
+      const emailInput = document.getElementById('customerEmail');
+      const customerEmail = emailInput ? emailInput.value.trim() : '';
+
+      if (!customerEmail || !customerEmail.includes('@')) {
+        alert('Lütfen dosyaların gönderileceği geçerli bir e-posta adresi girin.');
+        if (emailInput) emailInput.focus();
+        return;
+      }
+
       showToast('PayTR güvenli ödeme ekranı yükleniyor...');
 
       try {
         const res = await fetch('/api/paytr-checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ cart })
+          body: JSON.stringify({ 
+            cart, 
+            email: customerEmail // E-posta adresini backend'e gönderiyoruz
+          })
         });
         const data = await res.json();
 
@@ -351,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
             paytrModal.innerHTML = `
               <div style="background: white; width: 100%; max-width: 900px; height: 80vh; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; position: relative;">
                 <div style="background: #111; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
-                  <b>Güvenli Kredi Kartı Ödeme Ekranı (PayTR Test)</b>
+                  <b>Güvenli Kredi Kartı Ödeme Ekranı (PayTR)</b>
                   <button id="closePaytrModal" style="background: transparent; border: none; color: white; font-size: 18px; cursor: pointer;">✕</button>
                 </div>
                 <iframe id="paytriframe" src="https://www.paytr.com/odeme/guvenli/${data.token}" style="width: 100%; height: 100%; border: none;" frameborder="0"></iframe>
