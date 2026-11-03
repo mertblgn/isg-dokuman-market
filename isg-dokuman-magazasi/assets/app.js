@@ -29,17 +29,28 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
 
-  // Ziyaretçi Sayacını Güvenli Şekilde Artıran Fonksiyon
+  // Ziyaretçi Sayacını Güvenli Şekilde Artıran Fonksiyon (id sütunu gerektirmez)
   async function trackVisitor() {
     if (!supabaseClient) return;
     if (sessionStorage.getItem('visited')) return;
     
     try {
-      let { data, error } = await supabaseClient.from('stats').select('*').limit(1).single();
+      let { data, error } = await supabaseClient.from('stats').select('*').limit(1).maybeSingle();
       
       if (data) {
         const newCount = (data.visitor_count || 420) + 1;
-        await supabaseClient.from('stats').update({ visitor_count: newCount }).eq('id', data.id);
+        
+        // Tablodaki tek satırı id koşulu olmadan günceller
+        const { error: updateError } = await supabaseClient
+          .from('stats')
+          .update({ visitor_count: newCount })
+          .not('visitor_count', 'is', null);
+          
+        if (!updateError) {
+          sessionStorage.setItem('visited', 'true');
+        }
+      } else {
+        await supabaseClient.from('stats').insert([{ visitor_count: 421 }]);
         sessionStorage.setItem('visited', 'true');
       }
     } catch (err) {
