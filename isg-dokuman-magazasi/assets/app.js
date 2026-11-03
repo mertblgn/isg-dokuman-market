@@ -33,9 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function cleanDescription(text) {
     if (!text) return 'Profesyonel İSG doküman şablonu.';
     return text
-      .replace(/\*\*(.*?)\*\*/g, '$1') // Kalın yazıları düzelt
-      .replace(/\*(.*?)\*(.*?)/g, '$1')  // İtalik yazıları düzelt
-      .replace(/[📄📌⭐🚀]/g, '')     // Bozuk karakterleri ve emojileri temizle
+      .replace(/\*\*(.*?)\*\*/g, '$1') 
+      .replace(/\*(.*?)\*(.*?)/g, '$1')  
+      .replace(/[📄📌⭐🚀]/g, '')     
       .trim();
   }
 
@@ -95,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const pages = p.pages || 5;
       const cleanDesc = cleanDescription(p.description);
 
-      // Format türüne göre dinamik ikon ve sınıf belirleme
       let formatIcon = '📄';
       let formatClass = 'format-word';
       const fmtLower = format.toLowerCase();
@@ -111,6 +110,19 @@ document.addEventListener('DOMContentLoaded', () => {
       return `
         <article class="product-card">
           <div class="product-badge">${tag}</div>
+          
+          <!-- Filigranlı ve Görsel Önizleme Alanı -->
+          <div class="product-card-preview" onclick="openPreview('${p.id}')" style="cursor: pointer; height: 160px; background: #f8faf7; border-bottom: 1px solid #eee; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 15px;">
+            <div style="position: absolute; font-size: 16px; font-weight: 900; color: rgba(224, 0, 24, 0.08); transform: rotate(-25deg); letter-spacing: 0.1em; pointer-events: none; text-align: center; width: 100%;">İSG DOKÜMAN MARKET</div>
+            <div style="background: white; width: 100px; height: 130px; border: 1px solid #ddd; box-shadow: 0 4px 12px rgba(0,0,0,0.06); padding: 10px; font-size: 5px; color: #777; position: relative;">
+              <div style="font-size:5px; color:#e00018; font-weight:bold;">T.C. İSG</div>
+              <h4 style="font-size: 6px; color: #111; margin: 0 0 5px 0; border-bottom: 1px solid #e00018; padding-bottom: 3px;">${title.substring(0, 20)}...</h4>
+              <div style="height:3px; background:#eee; margin-bottom:3px; width:90%;"></div>
+              <div style="height:3px; background:#eee; margin-bottom:3px; width:70%;"></div>
+              <div style="height:3px; background:#eee; margin-bottom:3px; width:80%;"></div>
+            </div>
+          </div>
+
           <div class="product-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px 0 16px;">
             <span class="format-pill ${formatClass}" style="font-weight: 800; font-size: 10px;">${formatIcon} ${format}</span>
             <span class="page-count" style="font-size: 10px; color: #686868;">${pages} Sayfa / Alan</span>
@@ -166,6 +178,33 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modalPrice').innerHTML = `<span class="current-price">${p.price} TL</span> <span class="old-price">${p.list_price || (p.price + 50)} TL</span>`;
     document.getElementById('modalFormat').textContent = `Format: ${p.format}`;
     document.getElementById('modalPages').textContent = `Kapsam: ${p.pages || 5} Sayfa`;
+
+    // Modal içerisindeki kağıda sisli / blur efekti uygulama
+    const paperPreviewEl = document.querySelector('.paper-preview');
+    if (paperPreviewEl) {
+      paperPreviewEl.style.filter = 'blur(4px)';
+      paperPreviewEl.style.userSelect = 'none';
+      paperPreviewEl.style.pointerEvents = 'none';
+      paperPreviewEl.style.opacity = '0.75';
+      
+      let wrapper = paperPreviewEl.parentElement;
+      if (!wrapper.style.position) {
+        wrapper.style.position = 'relative';
+        wrapper.style.overflow = 'hidden';
+      }
+      
+      let existingBanner = wrapper.querySelector('.preview-overlay-banner');
+      if (!existingBanner) {
+        const banner = document.createElement('div');
+        banner.className = 'preview-overlay-banner';
+        banner.style.cssText = 'position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(17, 17, 17, 0.4); backdrop-filter: blur(2px); color: white; text-align: center; padding: 20px; border-radius: 8px;';
+        banner.innerHTML = `
+          <b style="font-size: 14px; margin-bottom: 6px; color: #ffd400;">🔒 Önizleme Sınırlandırıldı</b>
+          <p style="font-size: 10px; color: #f1f1f1; margin: 0;">İçeriğin tamamını görmek ve düzenlenebilir dosyayı indirmek için sepete ekleyin.</p>
+        `;
+        wrapper.appendChild(banner);
+      }
+    }
 
     const includesList = document.getElementById('modalIncludes');
     const includes = Array.isArray(p.includes) ? p.includes : ['Düzenlenebilir dosya', 'Örnek tablolar'];

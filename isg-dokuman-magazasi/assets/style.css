@@ -822,3 +822,90 @@ h1 em, h2 em {
   .modal-content { grid-template-columns: 1fr; }
   .modal-close { right: 10px; top: 10px; }
 }
+
+/* 1. Modal İçin Sisli / Blur Efekti */
+.paper-preview-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.paper-preview.blurred-preview {
+  filter: blur(4px);
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+.preview-overlay-banner {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(17, 17, 17, 0.4);
+  backdrop-filter: blur(2px);
+  color: white;
+  text-align: center;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.preview-overlay-banner b {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #ffd400;
+}
+
+.preview-overlay-banner p {
+  font-size: 10px;
+  color: #f1f1f1;
+  margin: 0;
+}
+
+/* 2. Ana Sayfa Kartları İçin Filigran Efekti */
+.product-card-preview {
+  height: 160px;
+  background: #f8faf7;
+  border-bottom: 1px solid #eee;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+}
+
+.card-watermark-bg {
+  position: absolute;
+  font-size: 20px;
+  font-weight: 900;
+  color: rgba(224, 0, 24, 0.08);
+  transform: rotate(-25deg);
+  letter-spacing: 0.1em;
+  pointer-events: none;
+  text-align: center;
+  width: 100%;
+}
+
+.card-mini-doc {
+  background: white;
+  width: 100px;
+  height: 130px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  padding: 10px;
+  font-size: 5px;
+  color: #777;
+  position: relative;
+}
+
+.card-mini-doc h4 {
+  font-size: 6px;
+  color: #111;
+  margin: 0 0 5px 0;
+  border-bottom: 1px solid #e00018;
+  padding-bottom: 3px;
+}
