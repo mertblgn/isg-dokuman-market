@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/\*\*(.*?)\*\*/g, '$1') 
       .replace(/\*(.*?)\*(.*?)/g, '$1')  
       .replace(/[📄📌⭐🚀]/g, '')     
+      .replace(/^[^\w\sÇĞİÖŞÜçğıöşü]+/, '') // Başta kalan garip sembolleri sil
       .trim();
   }
 
@@ -171,13 +172,35 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!p) return;
     currentModalProduct = p;
 
+    // Kategori ve Başlık
     document.getElementById('modalCategory').textContent = p.category || 'İSG Şablonu';
     document.getElementById('modalTitle').textContent = p.title || p.name;
     document.getElementById('paperTitle').textContent = p.title || p.name;
+    
+    // Temizlenmiş Açıklama
     document.getElementById('modalDescription').textContent = cleanDescription(p.description);
-    document.getElementById('modalPrice').innerHTML = `<span class="current-price">${p.price} TL</span> <span class="old-price">${p.list_price || (p.price + 50)} TL</span>`;
-    document.getElementById('modalFormat').textContent = `Format: ${p.format}`;
-    document.getElementById('modalPages').textContent = `Kapsam: ${p.pages || 5} Sayfa`;
+    
+    // Şık ve Ferah Fiyat Görünümü
+    document.getElementById('modalPrice').innerHTML = `
+      <div style="display: flex; align-items: baseline; gap: 10px; margin: 8px 0 12px 0;">
+        <span class="current-price" style="font-size: 24px; font-weight: 850; color: #111;">${p.price} TL</span>
+        <span class="old-price" style="font-size: 14px; color: #888; text-decoration: line-through;">${p.list_price || (p.price + 50)} TL</span>
+      </div>
+    `;
+
+    // Düzenli ve Ayrılmış Rozetler (Format ve Sayfa)
+    const formatStr = (p.format || 'Word').trim();
+    let fmtIcon = '📄';
+    if (formatStr.toLowerCase().includes('excel')) fmtIcon = '📊';
+    if (formatStr.toLowerCase().includes('pdf')) fmtIcon = '📑';
+
+    document.getElementById('modalFormat').innerHTML = `<span style="display: inline-flex; align-items: center; gap: 6px; background: #f4f6f5; border: 1px solid #e1e8e3; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #222; margin-right: 8px;">${fmtIcon} Format: ${formatStr}</span>`;
+    document.getElementById('modalPages').innerHTML = `<span style="display: inline-flex; align-items: center; gap: 6px; background: #f4f6f5; border: 1px solid #e1e8e3; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #222;">📑 Kapsam: ${p.pages || 5} Sayfa</span>`;
+
+    // İçerik Listesi Görünümü
+    const includesList = document.getElementById('modalIncludes');
+    const includes = Array.isArray(p.includes) ? p.includes : ['Düzenlenebilir dosya', 'Örnek tablolar', 'Kullanım kılavuzu'];
+    includesList.innerHTML = includes.map(inc => `<li style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #444; margin-bottom: 6px;"><span style="color: #16a34a; font-weight: bold;">✓</span> ${inc}</li>`).join('');
 
     // Modal içerisindeki kağıda sisli / blur efekti uygulama
     const paperPreviewEl = document.querySelector('.paper-preview');
@@ -205,10 +228,6 @@ document.addEventListener('DOMContentLoaded', () => {
         wrapper.appendChild(banner);
       }
     }
-
-    const includesList = document.getElementById('modalIncludes');
-    const includes = Array.isArray(p.includes) ? p.includes : ['Düzenlenebilir dosya', 'Örnek tablolar'];
-    includesList.innerHTML = includes.map(inc => `<li>✓ ${inc}</li>`).join('');
 
     document.getElementById('previewModal').hidden = false;
   };
