@@ -199,10 +199,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!p) return;
     currentModalProduct = p;
 
+    const title = p.title || p.name || 'İsimsiz Şablon';
+    const cleanDesc = cleanDescription(p.description);
+
     document.getElementById('modalCategory').textContent = p.category || 'İSG Şablonu';
-    document.getElementById('modalTitle').textContent = p.title || p.name;
-    document.getElementById('paperTitle').textContent = p.title || p.name;
-    document.getElementById('modalDescription').textContent = cleanDescription(p.description);
+    document.getElementById('modalTitle').textContent = title;
+    
+    // Kağıt önizlemesi üzerine gerçek ürün başlığı yansıtılıyor
+    const paperTitleEl = document.getElementById('paperTitle');
+    if (paperTitleEl) paperTitleEl.textContent = title;
+
+    document.getElementById('modalDescription').textContent = cleanDesc;
     
     document.getElementById('modalPrice').innerHTML = `
       <div style="display: flex; align-items: baseline; gap: 10px; margin: 8px 0 12px 0;">
@@ -348,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             cart, 
-            email: customerEmail // E-posta adresini backend'e gönderiyoruz
+            email: customerEmail 
           })
         });
         const data = await res.json();
