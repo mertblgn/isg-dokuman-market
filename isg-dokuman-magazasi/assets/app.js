@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
 
-  // Ziyaretçi Sayacını Güvenli Şekilde Artıran Fonksiyon (id sütunu gerektirmez)
+  // Ziyaretçi Sayacını Güvenli Şekilde Artıran Fonksiyon
   async function trackVisitor() {
     if (!supabaseClient) return;
     if (sessionStorage.getItem('visited')) return;
@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data) {
         const newCount = (data.visitor_count || 420) + 1;
         
-        // Tablodaki tek satırı id koşulu olmadan günceller
         const { error: updateError } = await supabaseClient
           .from('stats')
           .update({ visitor_count: newCount })
@@ -86,11 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let filtered = products.filter(p => {
       const pCat = (p.category || '').trim().toLowerCase();
       const aCat = activeCategory.trim().toLowerCase();
-      const matchesCategory = activeCategory === 'Tümü' || pCat === aCat;
+      const matchesCategory = activeCategory === 'Tümü' || pCat === aCat || pCat.includes(aCat) || aCat.includes(pCat);
 
       const pFmt = (p.format || '').trim().toLowerCase();
       const aFmt = activeFormat.trim().toLowerCase();
-      const matchesFormat = activeFormat === 'Tümü' || pFmt === aFmt;
+      const matchesFormat = activeFormat === 'Tümü' || pFmt.includes(aFmt);
 
       const term = searchInput ? searchInput.value.toLowerCase() : '';
       const matchesSearch = (p.title || p.name || '').toLowerCase().includes(term) || (p.description || '').toLowerCase().includes(term);
@@ -323,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCartItems();
   };
 
-const checkoutButton = document.getElementById('checkoutButton');
+  const checkoutButton = document.getElementById('checkoutButton');
   if (checkoutButton) {
     checkoutButton.addEventListener('click', async () => {
       if (cart.length === 0) {
@@ -375,34 +374,6 @@ const checkoutButton = document.getElementById('checkoutButton');
         console.error('Ödeme hatası:', err);
         alert('Bağlantı hatası oluştu.');
       }
-    });
-  }
-
-      cart.forEach((item, index) => {
-        setTimeout(() => {
-          const fileUrl = item.file_url || item.storage_path;
-          const link = document.createElement('a');
-          
-          if (fileUrl && fileUrl !== '#' && fileUrl.startsWith('http')) {
-            link.href = fileUrl;
-            link.target = '_blank';
-            link.setAttribute('download', item.file_name || `${item.title || 'isg_dokuman'}.${(item.format || 'docx').toLowerCase()}`);
-          } else {
-            const textContent = `İSG DOKÜMAN MARKETİ\n\nDoküman Adı: ${item.title || item.name}\nKategori: ${item.category}\nFormat: ${item.format}\n\nBu doküman dijital olarak teslim edilmiştir.`;
-            const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute('download', `${item.title || 'isg_dokuman'}.txt`);
-          }
-
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }, index * 400);
-      });
-
-      cart = [];
-      if (cartCount) cartCount.textContent = 0;
-      if (cartModal) cartModal.hidden = true;
     });
   }
 
