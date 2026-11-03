@@ -347,6 +347,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Satın alınan ürünleri ve e-posta adresini basarili.html için hafızaya kaydet
+      localStorage.setItem('lastPurchasedCart', JSON.stringify(cart));
+      localStorage.setItem('customerEmail', customerEmail);
+
       showToast('PayTR güvenli ödeme ekranı yükleniyor...');
 
       try {
