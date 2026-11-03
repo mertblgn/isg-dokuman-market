@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return text
       .replace(/\*\*(.*?)\*\*/g, '$1') // Kalın yazıları düzelt
       .replace(/\*(.*?)\*(.*?)/g, '$1')  // İtalik yazıları düzelt
-      .replace(/[📄📌⭐🚀]/g, '')       // Karmaşık emojileri temizle (isteğe bağlı)
+      .replace(/[📄📌⭐🚀]/g, '')     // Bozuk karakterleri ve emojileri temizle
       .trim();
   }
 
@@ -88,28 +88,43 @@ document.addEventListener('DOMContentLoaded', () => {
     if (emptyState) emptyState.hidden = true;
     productGrid.innerHTML = filtered.map(p => {
       const title = p.title || p.name || 'İsimsiz Şablon';
-      const format = p.format || 'Word';
+      const format = (p.format || 'Word').trim();
       const price = p.price !== undefined ? p.price : 99;
       const listPrice = p.list_price || (price + 50);
       const tag = p.tag || 'ÖNE ÇIKAN';
       const pages = p.pages || 5;
       const cleanDesc = cleanDescription(p.description);
 
+      // Format türüne göre dinamik ikon ve sınıf belirleme
+      let formatIcon = '📄';
+      let formatClass = 'format-word';
+      const fmtLower = format.toLowerCase();
+      
+      if (fmtLower.includes('excel') || fmtLower.includes('xls')) {
+        formatIcon = '📊';
+        formatClass = 'format-excel';
+      } else if (fmtLower.includes('pdf')) {
+        formatIcon = '📑';
+        formatClass = 'format-pdf';
+      }
+
       return `
         <article class="product-card">
           <div class="product-badge">${tag}</div>
-          <div class="product-header">
-            <span class="format-pill">${format}</span>
-            <span class="page-count">${pages} Sayfa / Alan</span>
+          <div class="product-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px 0 16px;">
+            <span class="format-pill ${formatClass}" style="font-weight: 800; font-size: 10px;">${formatIcon} ${format}</span>
+            <span class="page-count" style="font-size: 10px; color: #686868;">${pages} Sayfa / Alan</span>
           </div>
-          <h3>${title}</h3>
-          <p>${cleanDesc}</p>
-          <div class="product-footer">
-            <div class="price-box">
-              <span class="current-price">${price} TL</span>
-              <span class="old-price">${listPrice} TL</span>
+          <div class="product-info">
+            <h3>${title}</h3>
+            <p>${cleanDesc}</p>
+            <div class="product-footer">
+              <div class="price-box">
+                <span class="current-price" style="font-weight: 800; font-size: 16px;">${price} TL</span>
+                <span class="old-price">${listPrice} TL</span>
+              </div>
+              <button class="btn btn-sm btn-secondary" onclick="openPreview('${p.id}')">İncele <span>↗</span></button>
             </div>
-            <button class="btn btn-sm btn-secondary" onclick="openPreview('${p.id}')">İncele <span>↗</span></button>
           </div>
         </article>
       `;
