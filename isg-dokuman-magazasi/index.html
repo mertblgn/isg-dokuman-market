@@ -96,7 +96,7 @@
 
     <!-- Ürün Listesi -->
     <section id="productGrid" class="product-grid">
-      <!-- Dinamik olarak yüklenecek -->
+      <!-- Supabase üzerindeki ürünler app.js ile buraya yüklenecektir -->
     </section>
 
     <div id="emptyState" class="empty-state" hidden>
@@ -168,28 +168,4 @@
         <input type="email" id="customerEmail" placeholder="ornek@mail.com" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;">
       </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 15px; margin-bottom: 20px;">
-        <span style="font-weight: 600; color: #475569;">Toplam Tutar:</span>
-        <span id="cartTotalPrice" style="font-size: 20px; font-weight: 800; color: #0f172a;">0 TL</span>
-      </div>
-
-      <button id="checkoutButton" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; font-weight: bold; background: #dc2626; color: white; border: none; border-radius: 8px; cursor: pointer;">
-        Ödemeyi Tamamla ve Satın Al ↓
-      </button>
-      <p style="text-align: center; font-size: 11px; color: #94a3b8; margin-top: 8px;">Ödeme onaylandığında şablonlarınız belirttiğiniz e-posta adresine iletilecektir.</p>
-    </div>
-  </div>
-
-  <!-- Toast Bildirimi -->
-  <div id="toast" class="toast"></div>
-
-  <!-- Footer -->
-  <footer class="site-footer">
-    <div class="container footer-content">
-      <p>&copy; <span id="year"></span> İSG Doküman Marketi. Tüm hakları saklıdır. Akhisar / Manisa</p>
-    </div>
-  </footer>
-
-  <script src="assets/app.js"></script>
-</body>
-</html>
+      <div style="display
