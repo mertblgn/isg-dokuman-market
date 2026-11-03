@@ -29,6 +29,16 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
 
+  // Markdown ve özel sembolleri temizleyerek kartların şık görünmesini sağlayan fonksiyon
+  function cleanDescription(text) {
+    if (!text) return 'Profesyonel İSG doküman şablonu.';
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Kalın yazıları düzelt
+      .replace(/\*(.*?)\*(.*?)/g, '$1')  // İtalik yazıları düzelt
+      .replace(/[📄📌⭐🚀]/g, '')       // Karmaşık emojileri temizle (isteğe bağlı)
+      .trim();
+  }
+
   async function fetchProducts() {
     if (!supabaseClient) return;
 
@@ -83,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const listPrice = p.list_price || (price + 50);
       const tag = p.tag || 'ÖNE ÇIKAN';
       const pages = p.pages || 5;
+      const cleanDesc = cleanDescription(p.description);
 
       return `
         <article class="product-card">
@@ -92,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="page-count">${pages} Sayfa / Alan</span>
           </div>
           <h3>${title}</h3>
-          <p>${p.description || 'Profesyonel İSG doküman şablonu.'}</p>
+          <p>${cleanDesc}</p>
           <div class="product-footer">
             <div class="price-box">
               <span class="current-price">${price} TL</span>
@@ -136,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modalCategory').textContent = p.category || 'İSG Şablonu';
     document.getElementById('modalTitle').textContent = p.title || p.name;
     document.getElementById('paperTitle').textContent = p.title || p.name;
-    document.getElementById('modalDescription').textContent = p.description || '';
+    document.getElementById('modalDescription').textContent = cleanDescription(p.description);
     document.getElementById('modalPrice').innerHTML = `<span class="current-price">${p.price} TL</span> <span class="old-price">${p.list_price || (p.price + 50)} TL</span>`;
     document.getElementById('modalFormat').textContent = `Format: ${p.format}`;
     document.getElementById('modalPages').textContent = `Kapsam: ${p.pages || 5} Sayfa`;
@@ -235,12 +246,10 @@ document.addEventListener('DOMContentLoaded', () => {
           const link = document.createElement('a');
           
           if (fileUrl && fileUrl !== '#' && fileUrl.startsWith('http')) {
-            // Gerçek yüklenmiş dosya URL'si varsa indir
             link.href = fileUrl;
             link.target = '_blank';
             link.setAttribute('download', item.file_name || `${item.title || 'isg_dokuman'}.${(item.format || 'docx').toLowerCase()}`);
           } else {
-            // Herhangi bir aksaklık durumunda dinamik metin dokümanı üretip indir
             const textContent = `İSG DOKÜMAN MARKETİ\n\nDoküman Adı: ${item.title || item.name}\nKategori: ${item.category}\nFormat: ${item.format}\n\nBu doküman dijital olarak teslim edilmiştir.`;
             const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
             link.href = URL.createObjectURL(blob);
