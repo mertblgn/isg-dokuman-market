@@ -24,7 +24,7 @@ export default async function handler(req, res) {
   const email = userEmail || 'musteri@isgdokumanmarket.com';
   const payment_amount = totalAmount; 
   const currency = 'TL';
-  const test_mode = 1; // Şu an test modundayız! Canlıya geçince 0 yapılacak.
+  const test_mode = 0; // Şu an test modundayız! Canlıya geçince 0 yapılacak.
   const non_3d = 0;
   const merchant_ok_url = 'https://isg-dokuman-market.vercel.app/?success=true';
   const merchant_fail_url = 'https://isg-dokuman-market.vercel.app/?fail=true';
