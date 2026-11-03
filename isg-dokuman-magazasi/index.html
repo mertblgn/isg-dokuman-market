@@ -3,131 +3,193 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ödeme Başarılı | İSG Doküman Marketi</title>
+  <title>İSG Doküman Marketi | Profesyonel İSG Şablonları</title>
   <link rel="stylesheet" href="assets/style.css">
-  <style>
-    .success-card {
-      max-width: 650px;
-      margin: 60px auto;
-      padding: 40px 30px;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-      text-align: center;
-      border: 1px solid #e2e8f0;
-    }
-    .success-icon {
-      width: 70px;
-      height: 70px;
-      background: #dcfce7;
-      color: #16a34a;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-      margin: 0 auto 20px auto;
-    }
-    .download-list {
-      margin: 25px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .download-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #f8fafc;
-      padding: 16px;
-      border-radius: 10px;
-      border: 1px solid #e2e8f0;
-      text-align: left;
-    }
-    .download-btn {
-      background: #0284c7;
-      color: white;
-      padding: 10px 18px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 14px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.2s;
-    }
-    .download-btn:hover {
-      background: #0369a1;
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body style="background: #f8fafc; font-family: system-ui, -apple-system, sans-serif;">
+<body>
 
-  <div class="success-card">
-    <div class="success-icon">✓</div>
-    <h1 style="color: #0f172a; margin-bottom: 8px; font-size: 24px;">Ödemeniz Başarıyla Tamamlandı!</h1>
-    <p style="color: #64748b; font-size: 15px; line-height: 1.5;">
-      Siparişiniz onaylandı. Satın aldığınız şablon(lar) aşağıda listelenmiştir. İndirmek için butonlara tıklayabilirsiniz.
-    </p>
+  <!-- Üst Bilgi / Header -->
+  <header class="site-header">
+    <div class="container header-container">
+      <div class="logo">
+        <span class="logo-icon">🛡️</span>
+        <div>
+          <h1>İSG Doküman Marketi</h1>
+          <p>Profesyonel İş Sağlığı ve Güvenliği Çözümleri</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="cartButton" class="btn btn-secondary">
+          🛒 Sepet <span id="cartCount" class="badge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
 
-    <!-- İndirilebilir Ürünler -->
-    <div class="download-list" id="purchasedFilesList">
-      <p style="color: #64748b;">Dokümanlarınız hazırlanıyor...</p>
+  <!-- Hero / Karşılama Alanı -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <span class="badge-pill">🚀 Anında İndir & Düzenle</span>
+        <h2>Hangi dokümana ihtiyacın var?</h2>
+        <p>Saha denetimleri, risk değerlendirmeleri, acil durum planları ve eğitim tutanakları. Word, Excel ve PDF formatında, tamamen düzenlenebilir profesyonel şablonlar.</p>
+        
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Doküman adı, risk veya kategori ara...">
+        </div>
+      </div>
+
+      <div class="hero-preview-card">
+        <div class="floating-card card-front">
+          <div class="doc-watermark">ÖRNEK</div>
+          <div class="doc-head">
+            <div>
+              <b id="paperTitle">SAHA DENETİM RAPORU</b>
+              <small>Doküman önizlemesi</small>
+            </div>
+          </div>
+          <div class="doc-row"><span>Kontrol alanı</span><span>Durum</span></div>
+          <div class="doc-row"><span>KKD kullanımı</span><span class="status-ok">Uygun</span></div>
+          <div class="doc-row"><span>Yaya yolları</span><span class="status-warn">İncelenecek</span></div>
+          <div class="doc-row"><span>Elektrik panosu</span><span class="status-ok">Uygun</span></div>
+          <div class="doc-footer">
+            <span>İSG DOKÜMAN MARKETİ</span>
+            <span>01 / 04</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ana İçerik / Ürünler -->
+  <main class="container main-content">
+    
+    <!-- Filtreler -->
+    <div class="filter-bar">
+      <div class="categories" id="categoryGrid">
+        <button class="category-tile active" data-category="Tümü">Tümü</button>
+        <button class="category-tile" data-category="Saha Denetim">Saha Denetim</button>
+        <button class="category-tile" data-category="Risk Değerlendirme">Risk Değerlendirme</button>
+        <button class="category-tile" data-category="Eğitim">Eğitim</button>
+        <button class="category-tile" data-category="Formlar">Formlar</button>
+      </div>
+
+      <div class="controls-right">
+        <div class="format-filters">
+          <button class="format-filter active" data-format="Tümü">Tüm Formatlar</button>
+          <button class="format-filter" data-format="Word">Word</button>
+          <button class="format-filter" data-format="Excel">Excel</button>
+          <button class="format-filter" data-format="PDF">PDF</button>
+        </div>
+        <select id="sortSelect" class="sort-select">
+          <option value="featured">Öne Çıkanlar</option>
+          <option value="price-low">Fiyat: Düşükten Yükseğe</option>
+          <option value="price-high">Fiyat: Yüksekten Düşüğe</option>
+        </select>
+      </div>
     </div>
 
-    <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 13px; color: #94a3b8;">
-      Ödeme onayınız alındı. E-posta adresiniz: <strong id="userEmailDisplay" style="color: #334155;">-</strong><br>
-      <a href="index.html" style="color: #0284c7; text-decoration: none; margin-top: 12px; display: inline-block; font-weight: 600;">← Ana Sayfaya Dön</a>
+    <div class="results-info">
+      <h3 id="resultCount">0 şablon</h3>
+    </div>
+
+    <!-- Ürün Listesi -->
+    <section id="productGrid" class="product-grid">
+      <!-- Dinamik olarak yüklenecek -->
+    </section>
+
+    <div id="emptyState" class="empty-state" hidden>
+      <p>Aradığınız kriterlere uygun şablon bulunamadı.</p>
+    </div>
+  </main>
+
+  <!-- Ürün Önizleme Modalı -->
+  <div id="previewModal" class="modal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog horizontal-modal">
+      <button id="closeModal" class="modal-close">✕</button>
+      
+      <!-- Sol Taraf: Kağıt Önizlemesi -->
+      <div class="modal-preview-side">
+        <div class="paper-preview">
+          <div class="doc-watermark">ÖRNEK ÖNİZLEME</div>
+          <div class="doc-head">
+            <span style="color:#e00018; font-weight:bold;">T.C. İSG</span>
+            <h4 id="paperTitle" style="font-size: 11px; margin: 5px 0; color: #111;">Şablon Başlığı</h4>
+          </div>
+          <div style="height:6px; background:#eee; margin-bottom:6px; width:100%;"></div>
+          <div style="height:6px; background:#eee; margin-bottom:6px; width:85%;"></div>
+          <div style="height:6px; background:#eee; margin-bottom:6px; width:90%;"></div>
+          <div style="height:6px; background:#eee; margin-bottom:6px; width:60%;"></div>
+        </div>
+      </div>
+
+      <!-- Sağ Taraf: Detaylar -->
+      <div class="modal-details-side">
+        <span id="modalCategory" class="badge-pill" style="margin-bottom: 8px; display: inline-block;">Kategori</span>
+        <h2 id="modalTitle" style="font-size: 20px; color: #0f172a; margin-bottom: 10px;">Ürün Başlığı</h2>
+        <p id="modalDescription" style="color: #475569; font-size: 13px; line-height: 1.5; margin-bottom: 15px;">Açıklama...</p>
+        
+        <div id="modalPrice"></div>
+
+        <div class="modal-meta-row" style="margin-bottom: 15px;">
+          <span id="modalFormat"></span>
+          <span id="modalPages"></span>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <h4 style="font-size: 13px; color: #1e293b; margin-bottom: 8px;">Ürün İçeriği:</h4>
+          <ul id="modalIncludes" style="list-style: none; padding: 0; margin: 0;"></ul>
+        </div>
+
+        <button id="buyButton" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; font-weight: bold; background: #fbbf24; color: #111; border: none; border-radius: 8px; cursor: pointer;">
+          Sepete ekle +
+        </button>
+      </div>
     </div>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const listContainer = document.getElementById('purchasedFilesList');
-      const emailDisplay = document.getElementById('userEmailDisplay');
-      
-      const storedEmail = localStorage.getItem('customerEmail');
-      if (storedEmail && emailDisplay) {
-        emailDisplay.textContent = storedEmail;
-      }
+  <!-- Alışveriş Sepeti Modalı -->
+  <div id="cartModal" class="modal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog" style="max-width: 500px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 12px; margin-bottom: 15px;">
+        <h3 style="margin: 0; font-size: 18px;">Alışveriş Sepetiniz</h3>
+        <button id="closeCartModal" style="background:none; border:none; font-size: 18px; cursor:pointer;">✕</button>
+      </div>
 
-      let purchasedItems = [];
-      try {
-        purchasedItems = JSON.parse(localStorage.getItem('lastPurchasedCart')) || [];
-      } catch(e) {
-        purchasedItems = [];
-      }
+      <div id="cartItemList" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+        <!-- Sepet elemanları -->
+      </div>
 
-      if (purchasedItems.length === 0) {
-        listContainer.innerHTML = `
-          <div style="padding: 20px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; color: #9f1239; font-size: 14px;">
-            Hafızada henüz tamamlanmış ürün bulunamadı. Lütfen ana sayfaya dönüp sepetinizi kontrol edin.
-          </div>
-        `;
-        return;
-      }
+      <div style="margin-bottom: 15px;">
+        <label for="customerEmail" style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 5px;">E-posta Adresiniz (Dosyaların gönderileceği adres):</label>
+        <input type="email" id="customerEmail" placeholder="ornek@mail.com" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;">
+      </div>
 
-      listContainer.innerHTML = purchasedItems.map(item => {
-        // Eğer veritabanında file_url/download_url yoksa güvenli indirme simulation/linki kullanır
-        const downloadUrl = item.file_url || item.download_url || '#';
-        const title = item.title || item.name || 'İSG Doküman Şablonu';
-        const format = item.format || 'Word / Excel';
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 15px; margin-bottom: 20px;">
+        <span style="font-weight: 600; color: #475569;">Toplam Tutar:</span>
+        <span id="cartTotalPrice" style="font-size: 20px; font-weight: 800; color: #0f172a;">0 TL</span>
+      </div>
 
-        return `
-          <div class="download-item">
-            <div>
-              <b style="display: block; color: #0f172a; font-size: 15px; margin-bottom: 2px;">${title}</b>
-              <small style="color: #64748b;">Format: ${format}</small>
-            </div>
-            <a href="${downloadUrl}" class="download-btn" ${downloadUrl !== '#' ? 'download target="_blank"' : 'onclick="alert(\'Doküman indirmesi başlatıldı.\'); return false;"'}>
-              <span>📥</span> İndir
-            </a>
-          </div>
-        `;
-      }).join('');
-    });
-  </script>
+      <button id="checkoutButton" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; font-weight: bold; background: #dc2626; color: white; border: none; border-radius: 8px; cursor: pointer;">
+        Ödemeyi Tamamla ve Satın Al ↓
+      </button>
+      <p style="text-align: center; font-size: 11px; color: #94a3b8; margin-top: 8px;">Ödeme onaylandığında şablonlarınız belirttiğiniz e-posta adresine iletilecektir.</p>
+    </div>
+  </div>
 
+  <!-- Toast Bildirimi -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <p>&copy; <span id="year"></span> İSG Doküman Marketi. Tüm hakları saklıdır. Akhisar / Manisa</p>
+    </div>
+  </footer>
+
+  <script src="assets/app.js"></script>
 </body>
 </html>
