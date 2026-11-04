@@ -53,13 +53,11 @@ document.addEventListener('DOMContentLoaded', () => {
      YARDIMCI FONKSİYONLAR
   ========================================================= */
 
-  // Veritabanından gelen metinleri innerHTML'e koymadan önce güvenli hale getirir (XSS koruması)
   function escapeHtml(value) {
     const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
     return String(value ?? '').replace(/[&<>"']/g, (ch) => map[ch]);
   }
 
-  // Türkçe karakterleri (İ, ı, ş, ğ, ü, ö, ç) tolere eden arama/filtre normalizasyonu
   function normalize(value) {
     return String(value ?? '')
       .toLocaleLowerCase('tr-TR')
@@ -165,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cartCount) cartCount.textContent = cart.length;
   }
 
-  // Sepetteki ürünleri güncel veritabanı bilgileriyle eşitler (fiyat değişimi, silinen ürün vb.)
   function syncCartWithProducts() {
     if (!cart.length || !products.length) return;
     const byId = new Map(products.map((p) => [String(p.id), p]));
@@ -255,7 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
           .insert([{ visitor_count: BASE_VISITOR_COUNT + 1 }]));
       }
 
-      // Supabase hata fırlatmaz, { error } döndürür; bu yüzden ayrıca kontrol ediyoruz
       if (writeError) throw writeError;
 
       markVisited();
@@ -303,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isAll(activeCategory)) return true;
     const pCat = normalize(p.category);
     const aCat = normalize(activeCategory);
-    if (!pCat) return false; // Kategorisi boş olan ürünler her kategoride görünmesin
+    if (!pCat) return false;
     return pCat === aCat || pCat.includes(aCat) || aCat.includes(pCat);
   }
 
@@ -416,13 +412,11 @@ document.addEventListener('DOMContentLoaded', () => {
      OLAY DİNLEYİCİLERİ
   ========================================================= */
 
-  // Ürün kartı / "Ürünü İncele" tıklamaları
   document.addEventListener('click', (e) => {
     const target = e.target.closest('.btn-inspect, .product-card-preview');
     if (target && target.dataset.id) openPreview(target.dataset.id);
   });
 
-  // Kategori seçimi
   if (categoryGrid) {
     categoryGrid.addEventListener('click', (e) => {
       const tile = e.target.closest('.category-tile');
@@ -434,7 +428,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Format filtreleri (e.target yerine butonun kendisi kullanılıyor)
   document.querySelectorAll('.format-filter').forEach((btn) => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.format-filter').forEach((b) => b.classList.remove('active'));
@@ -447,10 +440,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (searchInput) searchInput.addEventListener('input', renderProducts);
   if (sortSelect) sortSelect.addEventListener('change', renderProducts);
 
-  // Önizleme modalı: kapat
   if (closeModalBtn) closeModalBtn.addEventListener('click', () => closeModal(previewModal));
 
-  // Sepete ekle
   if (buyButton) {
     buyButton.addEventListener('click', () => {
       if (!currentModalProduct) return;
@@ -468,7 +459,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Sepet modalı
   if (cartButton) {
     cartButton.addEventListener('click', () => {
       renderCartItems();
@@ -478,7 +468,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (closeCartModalBtn) closeCartModalBtn.addEventListener('click', () => closeModal(cartModal));
 
-  // Sepetten ürün kaldır (inline onclick ve global fonksiyon yerine event delegation)
   if (cartItemList) {
     cartItemList.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-remove-id]');
@@ -491,7 +480,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Modal dışına tıklayınca veya ESC ile kapat
   [previewModal, cartModal].forEach((modal) => {
     if (!modal) return;
     modal.addEventListener('click', (e) => {
@@ -505,9 +493,11 @@ document.addEventListener('DOMContentLoaded', () => {
     closeModal(cartModal);
   });
 
-  // Ödeme adımı
+  /* =========================================================
+     ÖDEME ADIMI (GERÇEK PAYTR İSTEĞİ)
+  ========================================================= */
   if (checkoutButton) {
-    checkoutButton.addEventListener('click', () => {
+    checkoutButton.addEventListener('click', async () => {
       if (cart.length === 0) {
         showToast('Sepetiniz boş.');
         return;
@@ -524,15 +514,55 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       try {
-        localStorage.setItem('lastPurchasedCart', JSON.stringify(cart));
-        localStorage.setItem('customerEmail', customerEmail);
-      } catch (err) {
-        console.error('Sipariş bilgileri kaydedilemedi:', err);
-        showToast('Bir sorun oluştu, lütfen tekrar deneyin.');
-        return;
-      }
+        checkoutButton.disabled = true;
+        checkoutButton.textContent = 'PayTR Ödeme Sayfasına Bağlanılıyor...';
 
-      window.location.href = 'basarili.html';
+        // Kullanıcının IP adresini alıyoruz
+        let userIp = '176.240.0.1';
+        try {
+          const ipRes = await fetch('https://api.ipify.org?format=json');
+          const ipData = await ipRes.json();
+          userIp = ipData.ip;
+        } catch (e) {
+          console.warn('IP adresi otomatik alınamadı.');
+        }
+
+        // Supabase Edge Function'a İstek Gönderiyoruz
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/create-paytr-token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY
+          },
+          body: JSON.stringify({
+            email: customerEmail,
+            cart: cart,
+            user_ip: userIp
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success' && data.token) {
+          localStorage.setItem('lastPurchasedCart', JSON.stringify(cart));
+          localStorage.setItem('customerEmail', customerEmail);
+
+          showToast('Güvenli ödeme sayfasına yönlendiriliyorsunuz...');
+          
+          // PayTR ödeme sayfasına canlı yönlendirme yapılıyor
+          window.location.href = `https://www.paytr.com/odeme/guvenli/${data.token}`;
+        } else {
+          showToast('Ödeme başlatılamadı: ' + (data.reason || data.message || 'Bilinmeyen hata'));
+          checkoutButton.disabled = false;
+          checkoutButton.textContent = 'Ödemeyi Tamamla ve Satın Al';
+        }
+
+      } catch (err) {
+        console.error('Ödeme hatası:', err);
+        showToast('Bağlantı sırasında bir sorun oluştu.');
+        checkoutButton.disabled = false;
+        checkoutButton.textContent = 'Ödemeyi Tamamla ve Satın Al';
+      }
     });
   }
 
