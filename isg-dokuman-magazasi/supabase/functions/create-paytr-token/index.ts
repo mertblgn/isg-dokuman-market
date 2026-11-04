@@ -15,20 +15,19 @@ serve(async (req) => {
     const { email, cart, user_ip } = await req.json();
 
     // PayTR Kurumsal Bilgileri
-    const merchant_id = "770404";
-    const merchant_key = "bkhoftywDU4nFUUy";
-    const merchant_salt = "HpP2ZuXuYEqiRnQj";
+    const merchant_id = "170404";
+    const merchant_key = "bkhoftywDU4nFUUW";
+    const merchant_salt = "HpP2ZuXuYEqiRnaj";
 
     // Sipariş detayları
-    const merchant_oid = "ISG" + Date.now(); // Benzersiz sipariş numarası
-    const client_ip = user_ip || "176.240.0.1"; // Kullanıcı IP adresi
+    const merchant_oid = "ISG" + Date.now();
+    const client_ip = user_ip || "176.240.0.1";
     
-    // Toplam Tutar Hesaplama (Kuruş cinsinden olmalı, örn: 99 TL -> 9900)
+    // Toplam Tutar Hesaplama (Kuruş cinsinden)
     const totalAmountFloat = cart.reduce((sum: number, item: any) => sum + Number(item.price || 99), 0);
     const payment_amount = Math.round(totalAmountFloat * 100);
 
-    // Başarılı ve Hatalı dönüş URL'leri
-    const merchant_ok_url = "https://isgdokumanmarketi.vercel.app/basarili.html"; 
+    const merchant_ok_url = "https://isgdokumanmarketi.vercel.app/basarili.html";
     const merchant_fail_url = "https://isgdokumanmarketi.vercel.app/index.html";
 
     // Sepet Formatı
@@ -41,17 +40,17 @@ serve(async (req) => {
     );
     const user_basket_base64 = btoa(unescape(encodeURIComponent(user_basket)));
 
-    // Standart Parametreler
     const timeout_limit = "30";
     const currency = "TL";
-    const test_mode = "0"; // Canlı ortam için "0"
+    const test_mode = "0";
     const no_shipping = "1";
+    const max_installment = "0"; // Taksit istemediğimiz için "0" olmalı
 
-    // Token Hash Hesabı
-    const hashStr = `${merchant_id}${client_ip}${merchant_oid}${email}${payment_amount}${user_basket_base64}${no_shipping}${currency}${test_mode}${merchant_salt}`;
+    // Hash string oluşturulurken PayTR kurallarına tam uyum sağlanıyor
+    const hashStr = `${merchant_id}${client_ip}${merchant_oid}${email}${payment_amount}${user_basket_base64}${no_shipping}${currency}${test_mode}${max_installment}${merchant_salt}`;
     const token = createHmac("sha256", merchant_key).update(hashStr).digest("base64");
 
-    // PayTR API isteği
+    // PayTR API isteği (Parametreler eksiksiz eklendi)
     const formData = new URLSearchParams({
       merchant_id,
       user_ip: client_ip,
@@ -62,9 +61,9 @@ serve(async (req) => {
       user_basket: user_basket_base64,
       debug_on: "1",
       no_shipping,
-      max_installment: "0",
+      max_installment,
+      no_installment: "1", // Tek çekim zorunluluğu / Taksit kapalı
       web_force_token: "0",
-      post_url: "",
       merchant_ok_url,
       merchant_fail_url,
       timeout_limit,
