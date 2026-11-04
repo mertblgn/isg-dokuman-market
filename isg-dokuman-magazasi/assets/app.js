@@ -34,6 +34,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cartCount) cartCount.textContent = cart.length;
   }
 
+  // Ziyaretçi Sayacı Fonksiyonu Eksiksiz Tanımlandı
+  async function trackVisitor() {
+    if (!supabaseClient) return;
+    if (sessionStorage.getItem('visited')) return;
+    try {
+      let { data } = await supabaseClient.from('stats').select('*').limit(1).maybeSingle();
+      if (data) {
+        const newCount = (data.visitor_count || 420) + 1;
+        await supabaseClient.from('stats').update({ visitor_count: newCount }).not('visitor_count', 'is', null);
+        sessionStorage.setItem('visited', 'true');
+      } else {
+        await supabaseClient.from('stats').insert([{ visitor_count: 421 }]);
+        sessionStorage.setItem('visited', 'true');
+      }
+    } catch (err) {
+      console.error('Ziyaretçi sayacı güncellenemedi:', err);
+    }
+  }
+
   function cleanDescription(text) {
     if (!text) return 'Profesyonel İSG doküman şablonu.';
     return text.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*(.*?)/g, '$1').trim();
@@ -124,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
-  // Tıklama olaylarını güvenli bir şekilde dinle
+  // Tıklama olaylarını güvenli dinle
   document.addEventListener('click', (e) => {
     const inspectBtn = e.target.closest('.btn-inspect, .product-card-preview');
     if (inspectBtn) {
@@ -164,17 +183,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const title = p.title || p.name || 'İsimsiz Şablon';
     const cleanDesc = cleanDescription(p.description);
 
-    document.getElementById('modalCategory').textContent = p.category || 'İSG Şablonu';
-    document.getElementById('modalTitle').textContent = title;
-    document.getElementById('paperTitle').textContent = `ÖNİZLEME: ${title}`;
-    document.getElementById('modalDescription').textContent = cleanDesc;
-    document.getElementById('modalPrice').textContent = `${p.price} TL`;
-    document.getElementById('modalFormat').textContent = `Format: ${p.format || 'Word'}`;
-    document.getElementById('modalPages').textContent = `Sayfa: ${p.pages || 5}`;
+    const setSafeText = (id, text) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    };
+
+    setSafeText('modalCategory', p.category || 'İSG Şablonu');
+    setSafeText('modalTitle', title);
+    setSafeText('paperTitle', `ÖNİZLEME: ${title}`);
+    setSafeText('modalDescription', cleanDesc);
+    setSafeText('modalPrice', `${p.price} TL`);
+    setSafeText('modalFormat', `Format: ${p.format || 'Word'}`);
+    setSafeText('modalPages', `Sayfa: ${p.pages || 5}`);
 
     const includesList = document.getElementById('modalIncludes');
-    const includes = Array.isArray(p.includes) ? p.includes : ['Düzenlenebilir dosya', 'Örnek tablolar ve alanlar'];
-    includesList.innerHTML = includes.map(inc => `<li>✓ ${inc}</li>`).join('');
+    if (includesList) {
+      const includes = Array.isArray(p.includes) ? p.includes : ['Düzenlenebilir dosya', 'Örnek tablolar ve alanlar'];
+      includesList.innerHTML = includes.map(inc => `<li>✓ ${inc}</li>`).join('');
+    }
 
     const modal = document.getElementById('previewModal');
     if (modal) modal.removeAttribute('hidden');
@@ -183,7 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeModalBtn = document.getElementById('closeModal');
   if (closeModalBtn) {
     closeModalBtn.addEventListener('click', () => {
-      document.getElementById('previewModal').setAttribute('hidden', 'true');
+      const modal = document.getElementById('previewModal');
+      if (modal) modal.setAttribute('hidden', 'true');
     });
   }
 
@@ -200,7 +227,8 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         showToast('Bu ürün zaten sepetinizde.');
       }
-      document.getElementById('previewModal').setAttribute('hidden', 'true');
+      const modal = document.getElementById('previewModal');
+      if (modal) modal.setAttribute('hidden', 'true');
     });
   }
 
