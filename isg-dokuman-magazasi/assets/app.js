@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
   let products = [];
-  // Sepet verisini tarayıcı hafızasından (localStorage) okuyarak başlatıyoruz
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   let activeCategory = 'Tümü';
   let activeFormat = 'Tümü';
@@ -21,8 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const yearSpan = document.getElementById('year');
 
   if (yearSpan) yearSpan.textContent = new Date().getFullYear();
-  
-  // Sayfa yüklendiğinde sepet sayacını güncelle
   updateCartCount();
 
   function showToast(msg) {
@@ -37,24 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cartCount) cartCount.textContent = cart.length;
   }
 
-  // Ziyaretçi Sayacını Güvenli Şekilde Artıran Fonksiyon
   async function trackVisitor() {
     if (!supabaseClient) return;
     if (sessionStorage.getItem('visited')) return;
-    
     try {
       let { data } = await supabaseClient.from('stats').select('*').limit(1).maybeSingle();
-      
       if (data) {
         const newCount = (data.visitor_count || 420) + 1;
-        const { error: updateError } = await supabaseClient
-          .from('stats')
-          .update({ visitor_count: newCount })
-          .not('visitor_count', 'is', null);
-          
-        if (!updateError) {
-          sessionStorage.setItem('visited', 'true');
-        }
+        await supabaseClient.from('stats').update({ visitor_count: newCount }).not('visitor_count', 'is', null);
+        sessionStorage.setItem('visited', 'true');
       } else {
         await supabaseClient.from('stats').insert([{ visitor_count: 421 }]);
         sessionStorage.setItem('visited', 'true');
@@ -66,23 +54,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function cleanDescription(text) {
     if (!text) return 'Profesyonel İSG doküman şablonu.';
-    return text
-      .replace(/\*\*(.*?)\*\*/g, '$1') 
-      .replace(/\*(.*?)\*(.*?)/g, '$1')  
-      .replace(/[📄📌⭐🚀]/g, '')     
-      .replace(/^[^\w\sÇĞİÖŞÜçğıöşü]+/, '') 
-      .trim();
+    return text.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*(.*?)/g, '$1').trim();
   }
 
   async function fetchProducts() {
     if (!supabaseClient) return;
-
     const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
     if (error) {
       console.error('Supabase hatası:', error);
       return;
     }
-
     products = data || [];
     renderProducts();
   }
@@ -111,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (resultCount) resultCount.textContent = `${filtered.length} şablon`;
-
     if (!productGrid) return;
 
     if (filtered.length === 0) {
@@ -132,44 +112,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
       let formatIcon = '📄';
       const fmtLower = format.toLowerCase();
-      
-      if (fmtLower.includes('excel') || fmtLower.includes('xls')) {
-        formatIcon = '📊';
-      } else if (fmtLower.includes('pdf')) {
-        formatIcon = '📑';
-      }
+      if (fmtLower.includes('excel') || fmtLower.includes('xls')) formatIcon = '📊';
+      else if (fmtLower.includes('pdf')) formatIcon = '📑';
 
       return `
-        <article class="product-card">
-          <div class="product-badge">${tag}</div>
+        <article class="product-card" style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; position:relative;">
+          <div class="product-badge" style="position:absolute; top:10px; left:10px; background:#dc2626; color:#fff; font-size:9px; padding:4px 8px; border-radius:4px; font-weight:700; z-index:2;">${tag}</div>
           
-          <div class="product-card-preview" onclick="openPreview('${p.id}')" style="cursor: pointer; height: 160px; background: #f8faf7; border-bottom: 1px solid #eee; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 15px;">
-            <div style="position: absolute; font-size: 16px; font-weight: 900; color: rgba(224, 0, 24, 0.08); transform: rotate(-25deg); letter-spacing: 0.1em; pointer-events: none; text-align: center; width: 100%;">İSG DOKÜMAN MARKET</div>
-            <div style="background: white; width: 100px; height: 130px; border: 1px solid #ddd; box-shadow: 0 4px 12px rgba(0,0,0,0.06); padding: 10px; font-size: 5px; color: #777; position: relative;">
-              <div style="font-size:5px; color:#e00018; font-weight:bold;">T.C. İSG</div>
-              <h4 style="font-size: 6px; color: #111; margin: 0 0 5px 0; border-bottom: 1px solid #e00018; padding-bottom: 3px;">${title.substring(0, 20)}...</h4>
-            </div>
+          <div class="product-card-preview" data-id="${p.id}" style="cursor: pointer; height: 140px; background: #f8faf7; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: center; position: relative;">
+            <span style="font-size:12px; font-weight:bold; color:#64748b;">${title}</span>
           </div>
 
-          <div class="product-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px 0 16px;">
-            <span style="font-weight: 800; font-size: 10px;">${formatIcon} ${format}</span>
-            <span style="font-size: 10px; color: #686868;">${pages} Sayfa / Alan</span>
-          </div>
-          <div class="product-info">
-            <h3>${title}</h3>
-            <p>${cleanDesc}</p>
-            <div class="product-footer">
-              <div class="price-box">
-                <span class="current-price" style="font-weight: 800; font-size: 16px;">${price} TL</span>
-                <span class="old-price">${listPrice} TL</span>
-              </div>
-              <button class="btn btn-sm btn-secondary" onclick="openPreview('${p.id}')">İncele <span>↗</span></button>
+          <div style="padding: 15px;">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color:#64748b; margin-bottom:8px;">
+              <span>${formatIcon} ${format}</span>
+              <span>${pages} Sayfa</span>
+            </div>
+            <h3 style="font-size: 14px; font-weight:700; color:#0f172a; margin:0 0 8px 0; height:36px; overflow:hidden;">${title}</h3>
+            <p style="font-size: 12px; color:#475569; margin:0 0 15px 0; height:32px; overflow:hidden;">${cleanDesc}</p>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top:1px solid #f1f5f9; pt-10px; padding-top:10px;">
+              <span style="font-weight: 800; font-size: 16px; color:#0f172a;">${price} TL</span>
+              <button class="btn-inspect" data-id="${p.id}" style="background:#f1f5f9; border:1px solid #cbd5e1; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">İncele ↗</button>
             </div>
           </div>
         </article>
       `;
     }).join('');
   }
+
+  // Tıklama olaylarını güvenli bir şekilde dinle (Butonların çalışmasını garantiler)
+  document.addEventListener('click', (e) => {
+    const inspectBtn = e.target.closest('.btn-inspect, .product-card-preview');
+    if (inspectBtn) {
+      const id = inspectBtn.dataset.id;
+      if (id) openPreview(id);
+    }
+  });
 
   if (categoryGrid) {
     categoryGrid.addEventListener('click', (e) => {
@@ -194,8 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (searchInput) searchInput.addEventListener('input', renderProducts);
   if (sortSelect) sortSelect.addEventListener('change', renderProducts);
 
-  window.openPreview = function(id) {
-    const p = products.find(item => item.id === id);
+  function openPreview(id) {
+    const p = products.find(item => item.id == id);
     if (!p) return;
     currentModalProduct = p;
 
@@ -204,59 +183,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('modalCategory').textContent = p.category || 'İSG Şablonu';
     document.getElementById('modalTitle').textContent = title;
-    
-    const paperTitleEl = document.getElementById('paperTitle');
-    if (paperTitleEl) paperTitleEl.textContent = title;
-
     document.getElementById('modalDescription').textContent = cleanDesc;
     
     document.getElementById('modalPrice').innerHTML = `
-      <div style="display: flex; align-items: baseline; gap: 10px; margin: 8px 0 12px 0;">
-        <span class="current-price" style="font-size: 24px; font-weight: 850; color: #111;">${p.price} TL</span>
-        <span class="old-price" style="font-size: 14px; color: #888; text-decoration: line-through;">${p.list_price || (p.price + 50)} TL</span>
-      </div>
+      <div style="font-size: 22px; font-weight: 800; color: #111; margin: 10px 0;">${p.price} TL</div>
     `;
 
     const formatStr = (p.format || 'Word').trim();
-    let fmtIcon = '📄';
-    if (formatStr.toLowerCase().includes('excel')) fmtIcon = '📊';
-    if (formatStr.toLowerCase().includes('pdf')) fmtIcon = '📑';
-
-    document.getElementById('modalFormat').innerHTML = `<span style="display: inline-flex; align-items: center; gap: 6px; background: #f4f6f5; border: 1px solid #e1e8e3; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #222; margin-right: 8px;">${fmtIcon} Format: ${formatStr}</span>`;
-    document.getElementById('modalPages').innerHTML = `<span style="display: inline-flex; align-items: center; gap: 6px; background: #f4f6f5; border: 1px solid #e1e8e3; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #222;">📑 Kapsam: ${p.pages || 5} Sayfa</span>`;
+    document.getElementById('modalFormat').textContent = `Format: ${formatStr}`;
+    document.getElementById('modalPages').textContent = `Sayfa: ${p.pages || 5}`;
 
     const includesList = document.getElementById('modalIncludes');
-    const includes = Array.isArray(p.includes) ? p.includes : ['Düzenlenebilir dosya', 'Örnek tablolar', 'Kullanım kılavuzu'];
-    includesList.innerHTML = includes.map(inc => `<li style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #444; margin-bottom: 6px;"><span style="color: #16a34a; font-weight: bold;">✓</span> ${inc}</li>`).join('');
-
-    const paperPreviewEl = document.querySelector('.paper-preview');
-    if (paperPreviewEl) {
-      paperPreviewEl.style.filter = 'blur(4px)';
-      paperPreviewEl.style.userSelect = 'none';
-      paperPreviewEl.style.pointerEvents = 'none';
-      paperPreviewEl.style.opacity = '0.75';
-      
-      let wrapper = paperPreviewEl.parentElement;
-      if (!wrapper.style.position) {
-        wrapper.style.position = 'relative';
-        wrapper.style.overflow = 'hidden';
-      }
-      
-      let existingBanner = wrapper.querySelector('.preview-overlay-banner');
-      if (!existingBanner) {
-        const banner = document.createElement('div');
-        banner.className = 'preview-overlay-banner';
-        banner.style.cssText = 'position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(17, 17, 17, 0.4); backdrop-filter: blur(2px); color: white; text-align: center; padding: 20px; border-radius: 8px;';
-        banner.innerHTML = `
-          <b style="font-size: 14px; margin-bottom: 6px; color: #ffd400;">🔒 Önizleme Sınırlandırıldı</b>
-          <p style="font-size: 10px; color: #f1f1f1; margin: 0;">İçeriğin tamamını görmek ve düzenlenebilir dosyayı indirmek için sepete ekleyin.</p>
-        `;
-        wrapper.appendChild(banner);
-      }
-    }
+    const includes = Array.isArray(p.includes) ? p.includes : ['Düzenlenebilir dosya', 'Örnek tablolar'];
+    includesList.innerHTML = includes.map(inc => `<li>✓ ${inc}</li>`).join('');
 
     document.getElementById('previewModal').hidden = false;
-  };
+  }
 
   const closeModalBtn = document.getElementById('closeModal');
   if (closeModalBtn) {
@@ -265,13 +207,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Sepete Ekle Butonu Güncellendi (localStorage kayıt eklenmiştir)
   const buyButton = document.getElementById('buyButton');
   if (buyButton) {
     buyButton.addEventListener('click', () => {
       if (!currentModalProduct) return;
-      
-      // Aynı ürün sepette var mı kontrol et
       const exists = cart.some(item => item.id === currentModalProduct.id);
       if (!exists) {
         cart.push(currentModalProduct);
@@ -281,7 +220,6 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         showToast('Bu ürün zaten sepetinizde.');
       }
-      
       document.getElementById('previewModal').hidden = true;
     });
   }
@@ -321,10 +259,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return `
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
           <div>
-            <h4 style="margin: 0; font-size: 15px;">${item.title || item.name}</h4>
-            <small style="color: #64748b;">${item.format} • ${price} TL</small>
+            <h4 style="margin: 0; font-size: 14px;">${item.title || item.name}</h4>
+            <small style="color: #64748b;">${price} TL</small>
           </div>
-          <button onclick="removeFromCart(${index})" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">Kaldır</button>
+          <button onclick="removeFromCart(${index})" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">Kaldır</button>
         </div>
       `;
     }).join('');
@@ -341,72 +279,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const checkoutButton = document.getElementById('checkoutButton');
   if (checkoutButton) {
-    checkoutButton.addEventListener('click', async () => {
+    checkoutButton.addEventListener('click', () => {
       if (cart.length === 0) {
         alert('Sepetiniz boş.');
         return;
       }
-
       const emailInput = document.getElementById('customerEmail');
       const customerEmail = emailInput ? emailInput.value.trim() : '';
 
       if (!customerEmail || !customerEmail.includes('@')) {
-        alert('Lütfen dosyaların gönderileceği geçerli bir e-posta adresi girin.');
+        alert('Lütfen geçerli bir e-posta adresi girin.');
         if (emailInput) emailInput.focus();
         return;
       }
 
       localStorage.setItem('lastPurchasedCart', JSON.stringify(cart));
       localStorage.setItem('customerEmail', customerEmail);
-
-      showToast('PayTR güvenli ödeme ekranı yükleniyor...');
-
-      try {
-        const res = await fetch('/api/paytr-checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            cart, 
-            email: customerEmail 
-          })
-        });
-        const data = await res.json();
-
-        if (data.status === 'success') {
-          if (cartModal) cartModal.hidden = true;
-          
-          let paytrModal = document.getElementById('paytrModal');
-          if (!paytrModal) {
-            paytrModal = document.createElement('div');
-            paytrModal.id = 'paytrModal';
-            paytrModal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;';
-            paytrModal.innerHTML = `
-              <div style="background: white; width: 100%; max-width: 900px; height: 80vh; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; position: relative;">
-                <div style="background: #111; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
-                  <b>Güvenli Kredi Kartı Ödeme Ekranı (PayTR)</b>
-                  <button id="closePaytrModal" style="background: transparent; border: none; color: white; font-size: 18px; cursor: pointer;">✕</button>
-                </div>
-                <iframe id="paytriframe" src="https://www.paytr.com/odeme/guvenli/${data.token}" style="width: 100%; height: 100%; border: none;" frameborder="0"></iframe>
-              </div>
-            `;
-            document.body.appendChild(paytrModal);
-            
-            document.getElementById('closePaytrModal').addEventListener('click', () => {
-              paytrModal.remove();
-            });
-          } else {
-            document.getElementById('paytriframe').src = `https://www.paytr.com/odeme/guvenli/${data.token}`;
-            paytrModal.style.display = 'flex';
-          }
-
-        } else {
-          // Eğer sunucu tarafında /api/paytr-checkout yoksa veya simülasyondaysak doğrudan başarılı sayfasına yönlendir
-          window.location.href = 'basarili.html';
-        }
-      } catch (err) {
-        console.warn('API route bulunamadı, simülasyon sayfasına yönlendiriliyor...', err);
-        window.location.href = 'basarili.html';
-      }
+      window.location.href = 'basarili.html';
     });
   }
 
