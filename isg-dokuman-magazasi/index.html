@@ -3,66 +3,75 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111111">
+  <meta name="description" content="Saha denetimleri, risk değerlendirmeleri, acil durum planları ve eğitim tutanakları için Word, Excel ve PDF formatında düzenlenebilir profesyonel İSG doküman şablonları.">
   <title>İSG Doküman Marketi | Profesyonel İSG Şablonları</title>
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://wcerczmsamjrntmrkjpo.supabase.co" crossorigin>
   <link rel="stylesheet" href="assets/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- defer: sayfa çizimini bloklamaz; Supabase, app.js'ten önce çalışır -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="assets/app.js"></script>
 </head>
 <body>
 
   <!-- Üst Bilgi / Header -->
   <header class="site-header">
-    <div class="container header-container">
-      <div class="logo" style="display: flex; align-items: center; gap: 10px;">
-        <span class="logo-icon" style="font-size: 24px;">🛡️</span>
-        <div>
-          <h1 style="margin: 0; font-size: 16px; font-weight: 800; color: #111;">İSG Doküman Marketi</h1>
-          <p style="margin: 0; font-size: 10px; color: #666;">Profesyonel İş Sağlığı ve Güvenliği Çözümleri</p>
-        </div>
-      </div>
+    <div class="header-container">
+      <a class="brand" href="index.html" aria-label="İSG Doküman Marketi ana sayfa">
+        <span class="brand-mark" aria-hidden="true">İSG</span>
+        <span>
+          <strong>İSG Doküman Marketi</strong>
+          <small>İş Sağlığı ve Güvenliği</small>
+        </span>
+      </a>
       <div class="header-actions">
-        <button id="cartButton" class="btn btn-secondary" style="background:#fff; border:1px solid #cbd5e1; padding:8px 16px; border-radius:8px; cursor:pointer; font-weight:600;">
-          🛒 Sepet <span id="cartCount" class="badge" style="background:#dc2626; color:#fff; padding:2px 6px; border-radius:10px; font-size:11px;">0</span>
+        <button type="button" id="cartButton" aria-haspopup="dialog">
+          🛒 Sepet <span id="cartCount">0</span>
         </button>
       </div>
     </div>
   </header>
 
   <!-- Hero / Karşılama Alanı -->
-  <section class="hero" style="background: linear-gradient(115deg, #111 0%, #171717 56%, #3b0006 100%); color: #fff; padding: 60px 20px;">
-    <div class="container hero-grid" style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center;">
-      <div class="hero-content">
-        <span class="badge-pill" style="display: inline-block; background: rgba(255,212,0,0.15); color: #ffd400; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-bottom: 12px;">🚀 Anında İndir & Düzenle</span>
-        <h2 style="color: #fff; font-size: 32px; font-weight: 800; line-height: 1.2; margin-bottom: 12px;">Hangi dokümana ihtiyacın var?</h2>
-        <p style="color: #cbd5e1; font-size: 13px; line-height: 1.6; margin-bottom: 20px;">Saha denetimleri, risk değerlendirmeleri, acil durum planları ve eğitim tutanakları. Word, Excel ve PDF formatında tamamen düzenlenebilir profesyonel şablonlar.</p>
-        
-        <div class="search-box" style="display: flex; align-items: center; background: #fff; border-radius: 8px; padding: 4px 12px; max-width: 400px;">
-          <input type="text" id="searchInput" placeholder="Doküman adı, risk veya kategori ara..." style="border: none; outline: none; width: 100%; padding: 8px 0; font-size: 13px; color: #111;">
+  <section class="hero">
+    <div class="container">
+      <div class="hero-copy">
+        <span class="badge-pill">🚀 Anında İndir &amp; Düzenle</span>
+        <h1>Hangi dokümana ihtiyacın var?</h1>
+        <p>Saha denetimleri, risk değerlendirmeleri, acil durum planları ve eğitim tutanakları. Word, Excel ve PDF formatında tamamen düzenlenebilir profesyonel şablonlar.</p>
+
+        <div class="search-box">
+          <input type="search" id="searchInput" autocomplete="off" aria-label="Şablon ara" placeholder="Doküman adı, risk veya kategori ara...">
         </div>
       </div>
     </div>
   </section>
 
   <!-- Ana İçerik / Ürünler -->
-  <main class="container main-content" style="max-width: 1200px; margin: 30px auto; padding: 0 20px;">
-    
+  <main class="container main-content">
+
     <!-- Filtreler -->
-    <div class="filter-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
-      <div class="categories" id="categoryGrid" style="display: flex; flex-wrap: wrap; gap: 8px;">
-        <button class="category-tile active" data-category="Tümü">Tümü</button>
-        <button class="category-tile" data-category="Saha Denetim">Saha Denetim</button>
-        <button class="category-tile" data-category="Risk Değerlendirme">Risk Değerlendirme</button>
-        <button class="category-tile" data-category="Eğitim">Eğitim</button>
-        <button class="category-tile" data-category="Formlar">Formlar</button>
+    <div class="filter-bar">
+      <div class="categories" id="categoryGrid" role="group" aria-label="Kategori filtresi">
+        <button type="button" class="category-tile active" data-category="Tümü">Tümü</button>
+        <button type="button" class="category-tile" data-category="Saha Denetim">Saha Denetim</button>
+        <button type="button" class="category-tile" data-category="Risk Değerlendirme">Risk Değerlendirme</button>
+        <button type="button" class="category-tile" data-category="Eğitim">Eğitim</button>
+        <button type="button" class="category-tile" data-category="Formlar">Formlar</button>
       </div>
 
-      <div class="controls-right" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-        <div class="format-filters" style="display: flex; gap: 5px;">
-          <button class="format-filter active" data-format="Tümü">Tüm Formatlar</button>
-          <button class="format-filter" data-format="Word">Word</button>
-          <button class="format-filter" data-format="Excel">Excel</button>
-          <button class="format-filter" data-format="PDF">PDF</button>
+      <div class="controls-right">
+        <div class="format-filters" role="group" aria-label="Format filtresi">
+          <button type="button" class="format-filter active" data-format="Tümü">Tüm Formatlar</button>
+          <button type="button" class="format-filter" data-format="Word">Word</button>
+          <button type="button" class="format-filter" data-format="Excel">Excel</button>
+          <button type="button" class="format-filter" data-format="PDF">PDF</button>
         </div>
-        <select id="sortSelect" class="sort-select" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; outline: none;">
+        <select id="sortSelect" class="sort-select" aria-label="Sıralama">
           <option value="featured">Öne Çıkanlar</option>
           <option value="price-low">Fiyat: Düşükten Yükseğe</option>
           <option value="price-high">Fiyat: Yüksekten Düşüğe</option>
@@ -70,84 +79,85 @@
       </div>
     </div>
 
-    <div class="results-info" style="margin-bottom: 15px;">
-      <h3 id="resultCount" style="font-size: 14px; color: #64748b; font-weight: 600;">0 şablon</h3>
-    </div>
-
     <!-- Ürün Listesi -->
-    <section id="productGrid" class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
-      <!-- Supabase üzerindeki ürünler app.js ile buraya yüklenecektir -->
-    </section>
+    <section aria-labelledby="catalogTitle">
+      <h2 id="catalogTitle" class="sr-only">Şablon listesi</h2>
+      <p id="resultCount" class="result-count" aria-live="polite">0 şablon</p>
 
-    <div id="emptyState" class="empty-state" hidden style="text-align: center; padding: 40px; color: #64748b;">
-      <p>Aradığınız kriterlere uygun şablon bulunamadı.</p>
-    </div>
+      <!-- Supabase üzerindeki ürünler app.js ile buraya yüklenecektir -->
+      <div id="productGrid" class="product-grid"></div>
+
+      <noscript>
+        <p class="product-grid-message">Şablonları görüntülemek için tarayıcınızda JavaScript etkin olmalıdır.</p>
+      </noscript>
+
+      <div id="emptyState" class="empty-state" hidden>
+        <p>Aradığınız kriterlere uygun şablon bulunamadı.</p>
+      </div>
+    </section>
   </main>
 
   <!-- Ürün Önizleme Modalı -->
-  <div id="previewModal" class="modal-backdrop" hidden style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">
-    <div style="background: white; width: 100%; max-width: 600px; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
-      <div style="background: #111; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
-        <b style="font-size: 14px;">Ürün Önizleme ve Detayları</b>
-        <button id="closeModal" style="background: transparent; border: none; color: white; font-size: 18px; cursor: pointer;">✕</button>
+  <div id="previewModal" class="modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <b class="modal-title-bar">Ürün Önizleme ve Detayları</b>
+        <button type="button" id="closeModal" class="modal-close" aria-label="Kapat">✕</button>
       </div>
-      <div style="padding: 20px; max-height: 75vh; overflow-y: auto;">
-        <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; height: 140px; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 15px; overflow: hidden;">
-          <div style="position: absolute; font-size: 18px; font-weight: 900; color: rgba(224, 0, 24, 0.12); transform: rotate(-25deg); pointer-events: none;">ÖRNEK FİLGIRANLI GÖRÜNÜM</div>
-          <span id="paperTitle" style="font-weight: 700; color: #475569; font-size: 13px; text-align: center; padding: 0 10px;"></span>
+      <div class="modal-body">
+        <div class="modal-preview">
+          <span class="watermark" aria-hidden="true">ÖRNEK FİLİGRANLI GÖRÜNÜM</span>
+          <span id="paperTitle" class="modal-preview-title"></span>
         </div>
-        <span id="modalCategory" style="background: #e2e8f0; color: #334155; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px;"></span>
-        <h2 id="modalTitle" style="font-size: 18px; color: #0f172a; margin: 8px 0;"></h2>
-        <p id="modalDescription" style="font-size: 13px; color: #475569; line-height: 1.5; margin-bottom: 15px;"></p>
-        <div id="modalPrice" style="font-size: 22px; font-weight: 800; color: #dc2626; margin-bottom: 15px;"></div>
-        <div style="display: flex; gap: 10px; font-size: 12px; color: #64748b; margin-bottom: 15px;">
-          <span id="modalFormat"></span> | <span id="modalPages"></span>
+        <span id="modalCategory" class="modal-tag"></span>
+        <h2 id="modalTitle" class="modal-title"></h2>
+        <p id="modalDescription" class="modal-desc"></p>
+        <div id="modalPrice" class="modal-price"></div>
+        <div class="modal-specs">
+          <span id="modalFormat"></span>
+          <span id="modalPages"></span>
         </div>
-        <div style="margin-bottom: 15px;">
-          <h4 style="font-size: 13px; color: #111; margin-bottom: 5px;">İçerik Detayları:</h4>
-          <ul id="modalIncludes" style="padding-left: 15px; font-size: 12px; color: #475569;"></ul>
-        </div>
-        <button id="buyButton" style="width: 100%; background: #dc2626; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">
-          🛒 Sepete Ekle
-        </button>
+        <h3 class="modal-includes-title">İçerik Detayları:</h3>
+        <ul id="modalIncludes" class="modal-includes"></ul>
+        <button type="button" id="buyButton" class="btn btn-buy btn-block">🛒 Sepete Ekle</button>
       </div>
     </div>
   </div>
 
   <!-- Alışveriş Sepeti Modalı -->
-  <div id="cartModal" class="modal" hidden>
-    <div class="modal-backdrop"></div>
-    <div class="modal-dialog" style="max-width: 500px; background: #fff; padding: 25px; border-radius: 12px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 12px; margin-bottom: 15px;">
-        <h3 style="margin: 0; font-size: 18px;">Alışveriş Sepetiniz</h3>
-        <button id="closeCartModal" style="background:none; border:none; font-size: 18px; cursor:pointer;">✕</button>
+  <div id="cartModal" class="modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+    <div class="modal-panel modal-panel--sm">
+      <div class="modal-header modal-header--light">
+        <h2 id="cartTitle" class="modal-title-bar">Alışveriş Sepetiniz</h2>
+        <button type="button" id="closeCartModal" class="modal-close" aria-label="Kapat">✕</button>
       </div>
-      <div id="cartItemList" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;"></div>
-      <div style="margin-bottom: 15px;">
-        <label for="customerEmail" style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 5px;">E-posta Adresiniz:</label>
-        <input type="email" id="customerEmail" placeholder="ornek@mail.com" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;">
+      <div class="modal-body">
+        <div id="cartItemList" class="cart-list"></div>
+
+        <div class="field">
+          <label for="customerEmail">E-posta Adresiniz:</label>
+          <input type="email" id="customerEmail" autocomplete="email" placeholder="ornek@mail.com">
+        </div>
+
+        <div class="cart-total">
+          <span class="cart-total-label">Toplam Tutar:</span>
+          <span id="cartTotalPrice" class="cart-total-price">0 TL</span>
+        </div>
+
+        <button type="button" id="checkoutButton" class="btn btn-buy btn-block">Ödemeyi Tamamla ve Satın Al</button>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 15px; margin-bottom: 20px;">
-        <span style="font-weight: 600; color: #475569;">Toplam Tutar:</span>
-        <span id="cartTotalPrice" style="font-size: 20px; font-weight: 800; color: #0f172a;">0 TL</span>
-      </div>
-      <button id="checkoutButton" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; font-weight: bold; background: #dc2626; color: white; border: none; border-radius: 8px; cursor: pointer;">
-        Ödemeyi Tamamla ve Satın Al ↓
-      </button>
     </div>
   </div>
 
   <!-- Toast Bildirimi -->
-  <div id="toast" class="toast"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <!-- Footer -->
-  <footer class="site-footer" style="background: #fff; border-top: 1px solid #e2e8f0; padding: 20px; text-align: center; margin-top: 40px; font-size: 11px; color: #64748b;">
-    <div class="container footer-content">
+  <footer class="site-footer">
+    <div class="footer-content">
       <p>&copy; <span id="year">2026</span> İSG Doküman Marketi. Tüm hakları saklıdır. Akhisar / Manisa</p>
     </div>
   </footer>
 
-  <!-- Script Bağlantısı -->
-  <script src="assets/app.js"></script>
 </body>
 </html>
