@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
-  // Tıklama olaylarını güvenli bir şekilde dinleme (İncele butonu ve kart önizlemesi)
+  // Tıklama olaylarını güvenli bir şekilde dinle
   document.addEventListener('click', (e) => {
     const inspectBtn = e.target.closest('.btn-inspect, .product-card-preview');
     if (inspectBtn) {
@@ -164,66 +164,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const title = p.title || p.name || 'İsimsiz Şablon';
     const cleanDesc = cleanDescription(p.description);
 
-    let modal = document.getElementById('previewModal');
-    if (!modal) {
-      // Eğer HTML içinde modal yoksa dinamik olarak oluştur
-      modal = document.createElement('div');
-      modal.id = 'previewModal';
-      modal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;';
-      modal.innerHTML = `
-        <div style="background: white; width: 100%; max-width: 600px; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
-          <div style="background: #111; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
-            <b style="font-size: 14px;">Ürün Önizleme ve Detayları</b>
-            <button id="closeModalBtn" style="background: transparent; border: none; color: white; font-size: 18px; cursor: pointer;">✕</button>
-          </div>
-          <div style="padding: 20px; max-height: 75vh; overflow-y: auto;">
-            <div id="modalWatermarkPreview" style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; height: 160px; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 15px; overflow: hidden;">
-              <div style="position: absolute; font-size: 20px; font-weight: 900; color: rgba(224, 0, 24, 0.12); transform: rotate(-25deg); pointer-events: none;">ÖRNEK FİLGIRANLI GÖRÜNÜM</div>
-              <span id="modalWatermarkTitle" style="font-weight: 700; color: #475569; font-size: 13px; text-align: center; padding: 0 10px;"></span>
-            </div>
-            <span id="modalCategory" style="background: #e2e8f0; color: #334155; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px;"></span>
-            <h2 id="modalTitle" style="font-size: 18px; color: #0f172a; margin: 8px 0;"></h2>
-            <p id="modalDescription" style="font-size: 13px; color: #475569; line-height: 1.5; margin-bottom: 15px;"></p>
-            <div id="modalPrice" style="font-size: 22px; font-weight: 800; color: #dc2626; margin-bottom: 15px;"></div>
-            <div style="display: flex; gap: 10px; font-size: 12px; color: #64748b; margin-bottom: 15px;">
-              <span id="modalFormat"></span> | <span id="modalPages"></span>
-            </div>
-            <button id="modalAddToCartBtn" style="width: 100%; background: #dc2626; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">
-              🛒 Sepete Ekle
-            </button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(modal);
-
-      document.getElementById('closeModalBtn').addEventListener('click', () => {
-        modal.style.display = 'none';
-      });
-
-      document.getElementById('modalAddToCartBtn').addEventListener('click', () => {
-        if (!currentModalProduct) return;
-        const exists = cart.some(item => item.id === currentModalProduct.id);
-        if (!exists) {
-          cart.push(currentModalProduct);
-          localStorage.setItem('cart', JSON.stringify(cart));
-          updateCartCount();
-          showToast(`"${currentModalProduct.title || currentModalProduct.name}" sepete eklendi!`);
-        } else {
-          showToast('Bu ürün zaten sepetinizde.');
-        }
-        modal.style.display = 'none';
-      });
-    } else {
-      modal.style.display = 'flex';
-    }
-
     document.getElementById('modalCategory').textContent = p.category || 'İSG Şablonu';
     document.getElementById('modalTitle').textContent = title;
-    document.getElementById('modalWatermarkTitle').textContent = `ÖNİZLEME: ${title}`;
+    document.getElementById('paperTitle').textContent = `ÖNİZLEME: ${title}`;
     document.getElementById('modalDescription').textContent = cleanDesc;
     document.getElementById('modalPrice').textContent = `${p.price} TL`;
     document.getElementById('modalFormat').textContent = `Format: ${p.format || 'Word'}`;
     document.getElementById('modalPages').textContent = `Sayfa: ${p.pages || 5}`;
+
+    const includesList = document.getElementById('modalIncludes');
+    const includes = Array.isArray(p.includes) ? p.includes : ['Düzenlenebilir dosya', 'Örnek tablolar ve alanlar'];
+    includesList.innerHTML = includes.map(inc => `<li>✓ ${inc}</li>`).join('');
+
+    const modal = document.getElementById('previewModal');
+    if (modal) modal.removeAttribute('hidden');
+  }
+
+  const closeModalBtn = document.getElementById('closeModal');
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', () => {
+      document.getElementById('previewModal').setAttribute('hidden', 'true');
+    });
+  }
+
+  const buyButton = document.getElementById('buyButton');
+  if (buyButton) {
+    buyButton.addEventListener('click', () => {
+      if (!currentModalProduct) return;
+      const exists = cart.some(item => item.id === currentModalProduct.id);
+      if (!exists) {
+        cart.push(currentModalProduct);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+        showToast(`"${currentModalProduct.title || currentModalProduct.name}" sepete eklendi!`);
+      } else {
+        showToast('Bu ürün zaten sepetinizde.');
+      }
+      document.getElementById('previewModal').setAttribute('hidden', 'true');
+    });
   }
 
   const cartButton = document.getElementById('cartButton');

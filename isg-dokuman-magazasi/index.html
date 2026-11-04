@@ -85,17 +85,32 @@
   </main>
 
   <!-- Ürün Önizleme Modalı -->
-  <div id="previewModal" class="modal" hidden>
-    <div class="modal-backdrop"></div>
-    <div class="modal-dialog horizontal-modal" style="background:#fff; padding:20px; border-radius:12px;">
-      <button id="closeModal" class="modal-close">✕</button>
-      <h2 id="modalTitle">Ürün Başlığı</h2>
-      <p id="modalDescription">Açıklama...</p>
-      <div id="modalPrice"></div>
-      <div id="modalFormat"></div>
-      <div id="modalPages"></div>
-      <ul id="modalIncludes"></ul>
-      <button id="buyButton" class="btn btn-primary">Sepete ekle +</button>
+  <div id="previewModal" class="modal-backdrop" hidden style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: white; width: 100%; max-width: 600px; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+      <div style="background: #111; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <b style="font-size: 14px;">Ürün Önizleme ve Detayları</b>
+        <button id="closeModal" style="background: transparent; border: none; color: white; font-size: 18px; cursor: pointer;">✕</button>
+      </div>
+      <div style="padding: 20px; max-height: 75vh; overflow-y: auto;">
+        <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; height: 140px; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 15px; overflow: hidden;">
+          <div style="position: absolute; font-size: 18px; font-weight: 900; color: rgba(224, 0, 24, 0.12); transform: rotate(-25deg); pointer-events: none;">ÖRNEK FİLGIRANLI GÖRÜNÜM</div>
+          <span id="paperTitle" style="font-weight: 700; color: #475569; font-size: 13px; text-align: center; padding: 0 10px;"></span>
+        </div>
+        <span id="modalCategory" style="background: #e2e8f0; color: #334155; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px;"></span>
+        <h2 id="modalTitle" style="font-size: 18px; color: #0f172a; margin: 8px 0;"></h2>
+        <p id="modalDescription" style="font-size: 13px; color: #475569; line-height: 1.5; margin-bottom: 15px;"></p>
+        <div id="modalPrice" style="font-size: 22px; font-weight: 800; color: #dc2626; margin-bottom: 15px;"></div>
+        <div style="display: flex; gap: 10px; font-size: 12px; color: #64748b; margin-bottom: 15px;">
+          <span id="modalFormat"></span> | <span id="modalPages"></span>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <h4 style="font-size: 13px; color: #111; margin-bottom: 5px;">İçerik Detayları:</h4>
+          <ul id="modalIncludes" style="padding-left: 15px; font-size: 12px; color: #475569;"></ul>
+        </div>
+        <button id="buyButton" style="width: 100%; background: #dc2626; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">
+          🛒 Sepete Ekle
+        </button>
+      </div>
     </div>
   </div>
 
