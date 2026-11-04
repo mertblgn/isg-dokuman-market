@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       sessionStorage.setItem('visited', 'true');
     } catch (err) {
-      /* sessionStorage kullanılamıyorsa sessizce geç */
+      /* sessiz geç */
     }
   }
 
@@ -274,7 +274,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function fetchProducts() {
     if (!supabaseClient) {
-      console.error('Supabase kütüphanesi yüklenemedi.');
       showLoadError();
       return;
     }
@@ -346,7 +345,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const tag = p.tag || 'ÖNE ÇIKAN';
         const pages = p.pages || 5;
         const desc = cleanDescription(p.description);
-
         const id = escapeHtml(p.id);
 
         return `
@@ -494,7 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* =========================================================
-     ÖDEME ADIMI (GERÇEK PAYTR İSTEĞİ)
+     ÖDEME ADIMI (SUPABASE EDGE FUNCTION ARACILIĞIYLA PAYTR TOKEN)
   ========================================================= */
   if (checkoutButton) {
     checkoutButton.addEventListener('click', async () => {
@@ -515,9 +513,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       try {
         checkoutButton.disabled = true;
-        checkoutButton.textContent = 'PayTR Ödeme Sayfasına Bağlanılıyor...';
+        checkoutButton.textContent = 'PayTR Güvenli Ödeme Sayfasına Bağlanılıyor...';
 
-        // Kullanıcının IP adresini alıyoruz
         let userIp = '176.240.0.1';
         try {
           const ipRes = await fetch('https://api.ipify.org?format=json');
@@ -527,7 +524,6 @@ document.addEventListener('DOMContentLoaded', () => {
           console.warn('IP adresi otomatik alınamadı.');
         }
 
-        // Supabase Edge Function'a İstek Gönderiyoruz
         const response = await fetch(`${SUPABASE_URL}/functions/v1/create-paytr-token`, {
           method: 'POST',
           headers: {
@@ -547,9 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
           localStorage.setItem('lastPurchasedCart', JSON.stringify(cart));
           localStorage.setItem('customerEmail', customerEmail);
 
-          showToast('Güvenli ödeme sayfasına yönlendiriliyorsunuz...');
-          
-          // PayTR ödeme sayfasına canlı yönlendirme yapılıyor
+          showToast('Yönlendiriliyorsunuz...');
           window.location.href = `https://www.paytr.com/odeme/guvenli/${data.token}`;
         } else {
           showToast('Ödeme başlatılamadı: ' + (data.reason || data.message || 'Bilinmeyen hata'));

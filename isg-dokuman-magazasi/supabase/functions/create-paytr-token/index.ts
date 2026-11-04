@@ -42,15 +42,17 @@ serve(async (req) => {
 
     const timeout_limit = "30";
     const currency = "TL";
-    const test_mode = "0";
+    const test_mode = "0"; // Canlı mod
     const no_shipping = "1";
-    const max_installment = "0"; // Taksit istemediğimiz için "0" olmalı
+    const no_installment = "1"; // Tek çekim
+    const max_installment = "0";
 
-    // Hash string oluşturulurken PayTR kurallarına tam uyum sağlanıyor
-    const hashStr = `${merchant_id}${client_ip}${merchant_oid}${email}${payment_amount}${user_basket_base64}${no_shipping}${currency}${test_mode}${max_installment}${merchant_salt}`;
+    // PayTR get-token API'si için standart hash sıralaması:
+    // merchant_id + user_ip + merchant_oid + email + payment_amount + user_basket + no_shipping + currency + test_mode + merchant_salt
+    const hashStr = `${merchant_id}${client_ip}${merchant_oid}${email}${payment_amount}${user_basket_base64}${no_shipping}${currency}${test_mode}${merchant_salt}`;
     const token = createHmac("sha256", merchant_key).update(hashStr).digest("base64");
 
-    // PayTR API isteği (Parametreler eksiksiz eklendi)
+    // PayTR API İstek Parametreleri
     const formData = new URLSearchParams({
       merchant_id,
       user_ip: client_ip,
@@ -61,9 +63,11 @@ serve(async (req) => {
       user_basket: user_basket_base64,
       debug_on: "1",
       no_shipping,
+      no_installment,
       max_installment,
-      no_installment: "1", // Tek çekim zorunluluğu / Taksit kapalı
-      web_force_token: "0",
+      user_name: "İSG Müşterisi",
+      user_address: "Akhisar / Manisa",
+      user_phone: "05461140345",
       merchant_ok_url,
       merchant_fail_url,
       timeout_limit,
