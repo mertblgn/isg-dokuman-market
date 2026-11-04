@@ -12,11 +12,11 @@
   <!-- Üst Bilgi / Header -->
   <header class="site-header">
     <div class="container header-container">
-      <div class="logo">
-        <span class="logo-icon">🛡️</span>
+      <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <span class="logo-icon" style="font-size: 24px;">🛡️</span>
         <div>
-          <h1>İSG Doküman Marketi</h1>
-          <p>Profesyonel İş Sağlığı ve Güvenliği Çözümleri</p>
+          <h1 style="margin: 0; font-size: 16px; font-weight: 800; color: #111;">İSG Doküman Marketi</h1>
+          <p style="margin: 0; font-size: 10px; color: #666;">Profesyonel İş Sağlığı ve Güvenliği Çözümleri</p>
         </div>
       </div>
       <div class="header-actions">
@@ -29,31 +29,28 @@
 
   <!-- Hero / Karşılama Alanı -->
   <section class="hero">
-    <div class="container hero-grid">
+    <div class="container hero-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center;">
       <div class="hero-content">
-        <span class="badge-pill">🚀 Anında İndir & Düzenle</span>
-        <h2>Hangi dokümana ihtiyacın var?</h2>
-        <p>Saha denetimleri, risk değerlendirmeleri, acil durum planları ve eğitim tutanakları. Word, Excel ve PDF formatında, tamamen düzenlenebilir profesyonel şablonlar.</p>
+        <span class="badge-pill" style="display: inline-block; background: rgba(255,212,0,0.15); color: #ffd400; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-bottom: 12px;">🚀 Anında İndir & Düzenle</span>
+        <h2 style="color: #fff; font-size: 32px; font-weight: 800; line-height: 1.2; margin-bottom: 12px;">Hangi dokümana ihtiyacın var?</h2>
+        <p style="color: #cbd5e1; font-size: 13px; line-height: 1.6; margin-bottom: 20px;">Saha denetimleri, risk değerlendirmeleri, acil durum planları ve eğitim tutanakları. Word, Excel ve PDF formatında, tamamen düzenlenebilir profesyonel şablonlar.</p>
         
-        <div class="search-box">
-          <input type="text" id="searchInput" placeholder="Doküman adı, risk veya kategori ara...">
+        <div class="search-box" style="display: flex; align-items: center; background: #fff; border-radius: 8px; padding: 4px 12px; max-width: 400px;">
+          <input type="text" id="searchInput" placeholder="Doküman adı, risk veya kategori ara..." style="border: none; outline: none; width: 100%; padding: 8px 0; font-size: 13px;">
         </div>
       </div>
 
-      <div class="hero-preview-card">
-        <div class="floating-card card-front">
-          <div class="doc-watermark">ÖRNEK</div>
-          <div class="doc-head">
-            <div>
-              <b id="paperTitle">SAHA DENETİM RAPORU</b>
-              <small>Doküman önizlemesi</small>
-            </div>
+      <div class="hero-preview-card" style="display: flex; justify-content: center;">
+        <div class="floating-card card-front" style="background: #fff; width: 100%; max-width: 320px; padding: 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; color: #333;">
+          <div class="doc-watermark" style="position: absolute; top: 40%; left: 20px; font-size: 28px; color: rgba(220,38,38,0.05); font-weight: 900; transform: rotate(-20deg); pointer-events: none;">ÖRNEK DÖKÜMAN</div>
+          <div class="doc-head" style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 12px;">
+            <b id="paperTitle" style="font-size: 13px; color: #0f172a; display: block;">SAHA DENETİM RAPORU</b>
+            <small style="font-size: 10px; color: #64748b;">Doküman önizlemesi</small>
           </div>
-          <div class="doc-row"><span>Kontrol alanı</span><span>Durum</span></div>
-          <div class="doc-row"><span>KKD kullanımı</span><span class="status-ok">Uygun</span></div>
-          <div class="doc-row"><span>Yaya yolları</span><span class="status-warn">İncelenecek</span></div>
-          <div class="doc-row"><span>Elektrik panosu</span><span class="status-ok">Uygun</span></div>
-          <div class="doc-footer">
+          <div class="doc-row" style="display: flex; justify-content: space-between; font-size: 11px; padding: 6px 0; border-bottom: 1px solid #f8fafc;"><span>Kontrol alanı</span><span>Durum</span></div>
+          <div class="doc-row" style="display: flex; justify-content: space-between; font-size: 11px; padding: 6px 0; border-bottom: 1px solid #f8fafc;"><span>KKD kullanımı</span><span class="status-ok" style="color: #16a34a; font-weight: 700;">Uygun</span></div>
+          <div class="doc-row" style="display: flex; justify-content: space-between; font-size: 11px; padding: 6px 0; border-bottom: 1px solid #f8fafc;"><span>Yaya yolları</span><span class="status-warn" style="color: #d97706; font-weight: 700;">İncelenecek</span></div>
+          <div class="doc-footer" style="display: flex; justify-content: space-between; font-size: 9px; color: #94a3b8; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 8px;">
             <span>İSG DOKÜMAN MARKETİ</span>
             <span>01 / 04</span>
           </div>
@@ -63,11 +60,11 @@
   </section>
 
   <!-- Ana İçerik / Ürünler -->
-  <main class="container main-content">
+  <main class="container main-content" style="max-width: 1200px; margin: 30px auto; padding: 0 20px;">
     
     <!-- Filtreler -->
-    <div class="filter-bar">
-      <div class="categories" id="categoryGrid">
+    <div class="filter-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
+      <div class="categories" id="categoryGrid" style="display: flex; flex-wrap: wrap; gap: 8px;">
         <button class="category-tile active" data-category="Tümü">Tümü</button>
         <button class="category-tile" data-category="Saha Denetim">Saha Denetim</button>
         <button class="category-tile" data-category="Risk Değerlendirme">Risk Değerlendirme</button>
@@ -75,14 +72,14 @@
         <button class="category-tile" data-category="Formlar">Formlar</button>
       </div>
 
-      <div class="controls-right">
-        <div class="format-filters">
+      <div class="controls-right" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <div class="format-filters" style="display: flex; gap: 5px;">
           <button class="format-filter active" data-format="Tümü">Tüm Formatlar</button>
           <button class="format-filter" data-format="Word">Word</button>
           <button class="format-filter" data-format="Excel">Excel</button>
           <button class="format-filter" data-format="PDF">PDF</button>
         </div>
-        <select id="sortSelect" class="sort-select">
+        <select id="sortSelect" class="sort-select" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; outline: none;">
           <option value="featured">Öne Çıkanlar</option>
           <option value="price-low">Fiyat: Düşükten Yükseğe</option>
           <option value="price-high">Fiyat: Yüksekten Düşüğe</option>
@@ -90,16 +87,16 @@
       </div>
     </div>
 
-    <div class="results-info">
-      <h3 id="resultCount">0 şablon</h3>
+    <div class="results-info" style="margin-bottom: 15px;">
+      <h3 id="resultCount" style="font-size: 14px; color: #64748b; font-weight: 600;">0 şablon</h3>
     </div>
 
     <!-- Ürün Listesi -->
-    <section id="productGrid" class="product-grid">
+    <section id="productGrid" class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
       <!-- Supabase üzerindeki ürünler app.js ile buraya yüklenecektir -->
     </section>
 
-    <div id="emptyState" class="empty-state" hidden>
+    <div id="emptyState" class="empty-state" hidden style="text-align: center; padding: 40px; color: #64748b;">
       <p>Aradığınız kriterlere uygun şablon bulunamadı.</p>
     </div>
   </main>
@@ -110,7 +107,6 @@
     <div class="modal-dialog horizontal-modal">
       <button id="closeModal" class="modal-close">✕</button>
       
-      <!-- Sol Taraf: Kağıt Önizlemesi -->
       <div class="modal-preview-side">
         <div class="paper-preview">
           <div class="doc-watermark">ÖRNEK ÖNİZLEME</div>
@@ -121,11 +117,9 @@
           <div style="height:6px; background:#eee; margin-bottom:6px; width:100%;"></div>
           <div style="height:6px; background:#eee; margin-bottom:6px; width:85%;"></div>
           <div style="height:6px; background:#eee; margin-bottom:6px; width:90%;"></div>
-          <div style="height:6px; background:#eee; margin-bottom:6px; width:60%;"></div>
         </div>
       </div>
 
-      <!-- Sağ Taraf: Detaylar -->
       <div class="modal-details-side">
         <span id="modalCategory" class="badge-pill" style="margin-bottom: 8px; display: inline-block;">Kategori</span>
         <h2 id="modalTitle" style="font-size: 20px; color: #0f172a; margin-bottom: 10px;">Ürün Başlığı</h2>
@@ -153,7 +147,7 @@
   <!-- Alışveriş Sepeti Modalı -->
   <div id="cartModal" class="modal" hidden>
     <div class="modal-backdrop"></div>
-    <div class="modal-dialog" style="max-width: 500px;">
+    <div class="modal-dialog" style="max-width: 500px; background: #fff; padding: 25px; border-radius: 12px;">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 12px; margin-bottom: 15px;">
         <h3 style="margin: 0; font-size: 18px;">Alışveriş Sepetiniz</h3>
         <button id="closeCartModal" style="background:none; border:none; font-size: 18px; cursor:pointer;">✕</button>
@@ -168,4 +162,28 @@
         <input type="email" id="customerEmail" placeholder="ornek@mail.com" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;">
       </div>
 
-      <div style="display
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 15px; margin-bottom: 20px;">
+        <span style="font-weight: 600; color: #475569;">Toplam Tutar:</span>
+        <span id="cartTotalPrice" style="font-size: 20px; font-weight: 800; color: #0f172a;">0 TL</span>
+      </div>
+
+      <button id="checkoutButton" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; font-weight: bold; background: #dc2626; color: white; border: none; border-radius: 8px; cursor: pointer;">
+        Ödemeyi Tamamla ve Satın Al ↓
+      </button>
+      <p style="text-align: center; font-size: 11px; color: #94a3b8; margin-top: 8px;">Ödeme onaylandığında şablonlarınız belirttiğiniz e-posta adresine iletilecektir.</p>
+    </div>
+  </div>
+
+  <!-- Toast Bildirimi -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Footer -->
+  <footer class="site-footer" style="background: #fff; border-top: 1px solid #e2e8f0; padding: 20px; text-align: center; margin-top: 40px; font-size: 11px; color: #64748b;">
+    <div class="container footer-content">
+      <p>&copy; <span id="year">2026</span> İSG Doküman Marketi. Tüm hakları saklıdır. Akhisar / Manisa</p>
+    </div>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
