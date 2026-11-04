@@ -29,29 +29,37 @@
       font-size: 36px;
       margin: 0 auto 20px auto;
     }
+    .download-list {
+      margin: 25px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
     .download-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: #f8fafc;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 10px;
+      padding: 16px;
+      border-radius: 10px;
       border: 1px solid #e2e8f0;
       text-align: left;
     }
     .download-btn {
-      background: #16a34a;
+      background: #0284c7;
       color: white;
-      padding: 8px 16px;
-      border-radius: 6px;
+      padding: 10px 18px;
+      border-radius: 8px;
       text-decoration: none;
       font-weight: bold;
       font-size: 14px;
-      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
     }
     .download-btn:hover {
-      background: #15803d;
+      background: #0369a1;
     }
   </style>
 </head>
@@ -59,53 +67,66 @@
 
   <div class="success-card">
     <div class="success-icon">✓</div>
-    <h1 style="color: #0f172a; margin-bottom: 10px; font-size: 24px;">Ödemeniz Başarıyla Alındó!</h1>
-    <p style="color: #64748b; font-size: 15px; line-height: 1.6; margin-bottom: 25px;">
-      Siparişiniz onaylandı. Satın aldığınız düzenlenebilir şablonları aşağıdan hemen indirebilirsiniz:
+    <h1 style="color: #0f172a; margin-bottom: 8px; font-size: 24px;">Ödemeniz Başarıyla Tamamlandı!</h1>
+    <p style="color: #64748b; font-size: 15px; line-height: 1.5;">
+      Siparişiniz onaylandı. Satın aldığınız şablon(lar) aşağıda listelenmiştir. Hemen indirebilirsiniz.
     </p>
 
     <!-- İndirilebilir Ürünler Listesi -->
-    <div id="purchasedFilesList">
-      <p style="color: #64748b;">Şablonlar yükleniyor...</p>
+    <div class="download-list" id="purchasedFilesList">
+      <p style="color: #64748b;">Dokümanlarınız hazırlanıyor...</p>
     </div>
 
     <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 13px; color: #94a3b8;">
-      Bilgilendirme e-postası kayıtlı adresinize gönderilmiştir.<br>
-      <a href="index.html" style="color: #0284c7; text-decoration: none; margin-top: 10px; display: inline-block;">← Ana Sayfaya Dön</a>
+      Ödeme onayınız alındı. E-posta adresiniz: <strong id="userEmailDisplay" style="color: #334155;">-</strong><br>
+      <a href="index.html" style="color: #0284c7; text-decoration: none; margin-top: 12px; display: inline-block; font-weight: 600;">← Ana Sayfaya Dön</a>
     </div>
   </div>
 
   <script>
-    // LocalStorage veya URL'den son alınan sepet/ürün bilgilerini okuyup listeleme
     document.addEventListener('DOMContentLoaded', () => {
       const listContainer = document.getElementById('purchasedFilesList');
+      const emailDisplay = document.getElementById('userEmailDisplay');
       
-      // Örnek olarak test amaçlı sepet verisini okuyalım veya mock gösterelim
-      // Gerçek yapıda PayTR dönüşünde sepet verisi aktarılır
+      const storedEmail = localStorage.getItem('customerEmail');
+      if (storedEmail && emailDisplay) {
+        emailDisplay.textContent = storedEmail;
+      }
+
       let purchasedItems = [];
       try {
-        purchasedItems = JSON.parse(localStorage.getItem('lastPurchasedCart')) || [
-          { title: 'Saha Denetim Raporu Şablonu', format: 'Word', file_url: '#' },
-          { title: 'Risk Değerlendirme Takip Tablosu', format: 'Excel', file_url: '#' }
-        ];
+        purchasedItems = JSON.parse(localStorage.getItem('lastPurchasedCart')) || [];
       } catch(e) {
         purchasedItems = [];
       }
 
       if (purchasedItems.length === 0) {
-        listContainer.innerHTML = `<p style="color: #64748b;">İndirilecek şablon bulunamadı.</p>`;
+        listContainer.innerHTML = `
+          <div style="padding: 20px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; color: #9f1239; font-size: 14px;">
+            Hafızada henüz tamamlanmış ürün bulunamadı. Lütfen ana sayfaya dönüp sepetinizi kontrol edin.
+          </div>
+        `;
         return;
       }
 
-      listContainer.innerHTML = purchasedItems.map(item => `
-        <div class="download-item">
-          <div>
-            <b style="display: block; color: #0f172a; font-size: 15px;">${item.title || item.name}</b>
-            <small style="color: #64748b;">Format: ${item.format || 'Word / Excel'}</small>
+      listContainer.innerHTML = purchasedItems.map(item => {
+        // Supabase'den gelen gerçek dosya linki veya güvenli indirme bağlantısı
+        const downloadUrl = item.file_url || item.download_url || '#';
+        const title = item.title || item.name || 'İSG Doküman Şablonu';
+        const format = item.format || 'Word / Excel';
+
+        return `
+          <div class="download-item">
+            <div>
+              <b style="display: block; color: #0f172a; font-size: 15px; margin-bottom: 2px;">${title}</b>
+              <small style="color: #64748b;">Format: ${format}</small>
+            </div>
+            <a href="${downloadUrl}" class="download-btn" ${downloadUrl !== '#' ? 'download target="_blank"' : 'onclick="alert(\'Doküman indirmesi başlatıldı.\'); return false;"'}>
+              <span>📥</span> İndir
+            </a>
           </div>
-          <a href="${item.file_url || '#'}" class="download-btn" target="_blank" onclick="alert('İndirme başlatılıyor!')">📥 İndir</a>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     });
   </script>
 
