@@ -14,23 +14,21 @@ serve(async (req) => {
   try {
     const { email, cart, user_ip } = await req.json();
 
-    // PayTR Kurumsal Bilgileri
-    const merchant_id = "170404";
-    const merchant_key = "bkhoftywDU4nFUUW";
-    const merchant_salt = "HpP2ZuXuYEqiRnaj";
+    const merchant_id = "770404";
+    const merchant_key = "bkhoftywDU4nFUUy";
+    const merchant_salt = "HpP2ZuXuYEqiRnQj";
 
-    // Sipariş detayları
     const merchant_oid = "ISG" + Date.now();
-    const client_ip = user_ip || "176.240.0.1";
+    const client_ip = user_ip || "195.175.222.12";
     
-    // Toplam Tutar Hesaplama (Kuruş cinsinden)
+    // Toplam Tutar (Kuruş cinsinden)
     const totalAmountFloat = cart.reduce((sum: number, item: any) => sum + Number(item.price || 99), 0);
     const payment_amount = Math.round(totalAmountFloat * 100);
 
     const merchant_ok_url = "https://isgdokumanmarketi.vercel.app/basarili.html";
     const merchant_fail_url = "https://isgdokumanmarketi.vercel.app/index.html";
 
-    // Sepet Formatı
+    // Sepet Yapısı
     const user_basket = JSON.stringify(
       cart.map((item: any) => [
         item.title || item.name || "İSG Dokümanı",
@@ -44,15 +42,13 @@ serve(async (req) => {
     const currency = "TL";
     const test_mode = "0"; // Canlı mod
     const no_shipping = "1";
-    const no_installment = "1"; // Tek çekim
+    const no_installment = "0"; // Taksit kısıtlaması kaldırıldı
     const max_installment = "0";
 
-    // PayTR get-token API'si için standart hash sıralaması:
-    // merchant_id + user_ip + merchant_oid + email + payment_amount + user_basket + no_shipping + currency + test_mode + merchant_salt
+    // PayTR get-token resmi hash sıralaması
     const hashStr = `${merchant_id}${client_ip}${merchant_oid}${email}${payment_amount}${user_basket_base64}${no_shipping}${currency}${test_mode}${merchant_salt}`;
     const token = createHmac("sha256", merchant_key).update(hashStr).digest("base64");
 
-    // PayTR API İstek Parametreleri
     const formData = new URLSearchParams({
       merchant_id,
       user_ip: client_ip,
@@ -88,6 +84,7 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     } else {
+      // Hatanın net sebebini görmek için reason döndürüyoruz
       return new Response(JSON.stringify({ status: "failed", reason: result.reason }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
