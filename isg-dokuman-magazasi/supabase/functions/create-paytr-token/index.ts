@@ -14,6 +14,7 @@ serve(async (req) => {
   try {
     const { email, cart, user_ip } = await req.json();
 
+    // GERÇEK MAĞAZA BİLGİLERİNİZ (170404)
     const merchant_id = "770404";
     const merchant_key = "bkhoftywDU4nFUUy";
     const merchant_salt = "HpP2ZuXuYEqiRnQj";
@@ -42,10 +43,8 @@ serve(async (req) => {
     const currency = "TL";
     const test_mode = "0"; // Canlı mod
     const no_shipping = "1";
-    const no_installment = "0"; // Taksit kısıtlaması kaldırıldı
-    const max_installment = "0";
 
-    // PayTR get-token resmi hash sıralaması
+    // PAYTR RESMİ GET-TOKEN HASH SIRALAMASI (Kesinlikle değiştirilmemelidir)
     const hashStr = `${merchant_id}${client_ip}${merchant_oid}${email}${payment_amount}${user_basket_base64}${no_shipping}${currency}${test_mode}${merchant_salt}`;
     const token = createHmac("sha256", merchant_key).update(hashStr).digest("base64");
 
@@ -59,8 +58,6 @@ serve(async (req) => {
       user_basket: user_basket_base64,
       debug_on: "1",
       no_shipping,
-      no_installment,
-      max_installment,
       user_name: "İSG Müşterisi",
       user_address: "Akhisar / Manisa",
       user_phone: "05461140345",
@@ -84,7 +81,6 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     } else {
-      // Hatanın net sebebini görmek için reason döndürüyoruz
       return new Response(JSON.stringify({ status: "failed", reason: result.reason }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
